@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+    <head>
+        <meta charset="utf-8">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="static/styles/main.css" type="text/css">
+    </head>
+    <body>
+        <p class="main-title"> Country Statistics </p>
+        <div class="login-box" id="login-box">
+            <input type="text" id="username" class="username" placeholder="Enter username..."> <br/>
+            <input id="password" class="password" type="password" placeholder="Enter password..."> <br/>
+            <button id="login-button" class="login-button" onclick="login()"> Login </button>
+            <!-- <button id="number" onclick="getNumber()"> Click </button> -->
+        </div>
+        <p class="invalid-login" id="invalid-login"> Invalid Credentials </p>
+        <div class="main" id="main">
+
+        </div>
+        <!-- <div id="display"></div> -->
+    </body>
+    <!-- Script -->
+    <script>
+        let gdpVisible = false
+
+        async function login() {
+            let username = document.getElementById('username').value
+            let password = document.getElementById('password').value
+
+            let body = {
+                "username": username,
+                "password": password,
+            }
+
+            try {
+                let response = await fetch("http://127.0.0.1:5000/authentication", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                })
+
+                if (response.status == 400) {
+                    let indicator = document.getElementById('invalid-login')
+                    indicator.style.display = "block"
+                }
+                else if (response.status == 200) {
+                    let indicator = document.getElementById('invalid-login')
+                    let loginBox = document.getElementById('login-box')
+                    loginBox.style.display = "none"
+                    indicator.style.display = "none"
+                    // indicator.style.display = "block"
+                    // indicator.style.color = "green"
+                    let mainWindow = document.getElementById('main')
+                    let gdpWindow = document.createElement('div')
+                    gdpWindow.id = 'gdp-window'
+                    gdpWindow.className = 'endpoint-windows'
+
+                    let gdpTextElem = document.createElement('p')
+                    gdpTextElem.id = 'gdp-title-text'
+                    gdpTextElem.className = 'title-texts'
+                    let gdpText = document.createTextNode('GDP Prediction')
+
+                    let arrow = document.createElement('i')
+                    arrow.className = "down-arrow"
+                    arrow.id = "gdp-arrow"
+
+                    gdpTextElem.appendChild(gdpText)
+                    gdpTextElem.appendChild(arrow)
+                    gdpWindow.appendChild(gdpTextElem)
+                    main.appendChild(gdpWindow)
+
+                    let gdpMain = document.createElement('div')
+                    gdpMain.className = "endpoint-box"
+                    gdpMain.id = "gdp-box"
+                    gdpMain.style.display = "none"
+
+                    let debugElem = document.createElement('p')
+                    debugElem.id = "debug"
+                    let text = document.createTextNode('Showing GDP Prediction')
+                    debugElem.appendChild(text)
+
+                    gdpMain.appendChild(debugElem)
+                    gdpWindow.appendChild(gdpMain)
+                    gdpTextElem.addEventListener('click', toggleGdpWindow, false)
+                }
+                let data = await response.json()
+            }
+            catch (error) {
+                alert(error)
+            }
+        }
+
+        function toggleGdpWindow() {
+            let debug = document.getElementById('gdp-box')
+            let arrow = document.getElementById('gdp-arrow')
+
+            if (!gdpVisible) {
+                arrow.className = "up-arrow"
+                debug.style.display = "block"
+                gdpVisible = true
+            }
+            else {
+                arrow.className = "down-arrow"
+                debug.style.display = "none"
+                gdpVisible = false
+            }
+        }
+        // async function getNumber() {
+        //     let response = await fetch("http://127.0.0.1:5000/stuff")
+        //     let data = await response.json()
+            
+        //     let num = parseInt(JSON.stringify(data))
+        //     console.log(num)
+        //     if (document.getElementById('this-is-a-text')) {
+        //         let displayNode = document.getElementById('this-is-a-text')
+        //         displayNode.textContent = num
+        //     }
+
+        //     else {
+        //         let displayNode = document.createElement('p')
+        //         displayNode.id = 'this-is-a-text'
+        //         let t = document.createTextNode(num)
+        //         displayNode.appendChild(t)
+        //         document.getElementById('display').appendChild(displayNode)
+        //     }
+        // }
+    </script>
+    <!-- End Script -->
+</html>

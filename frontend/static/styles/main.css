@@ -1,0 +1,104 @@
+body {
+    background-color: #f2f2f2;
+    text-align: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.main-title {
+    font-size: 28pt;
+    text-align: center;
+}
+
+.login-box {
+    margin-top: 80px;
+}
+
+.username, .password {
+    border: 1px solid rgb(219, 219, 219);
+    width: 300px;
+    height: 40px;
+    font-size: 14pt;
+    margin-bottom: 5px;
+    padding-left: 8px;
+}
+
+.login-button {
+    border-radius: 3px;
+    width: 310px;
+    height: 40px;
+    margin-top: 20px;
+    background-color: green;
+    border: 1px solid green;
+    color: white;
+    font-size: 12pt;
+    transition: background-color 0.1s, color 0.1s;
+}
+
+.login-button:hover {
+    cursor: pointer;
+    background-color: white;
+    color: green;
+}
+
+.invalid-login {
+    display: none;
+    color: red;
+    font-size: 12pt;
+}
+
+.main {
+    margin-top: 60px;
+}
+
+.endpoint-windows {
+    width: 70%;
+    margin-left: 15%;
+    text-align: left;
+    animation: fadein 0.2s;
+}
+
+.endpoint-box {
+    /* margin-top: 5px; */
+    border: 1px solid black;
+    border-radius: 2px;
+}
+
+.title-texts {
+    cursor: pointer;
+    background-color: rgb(197, 201, 255);
+    padding: 10px;
+    font-size: 16pt;
+    margin-left: 0;
+    border: 1px solid rgb(197, 201, 255);
+    transition: border 0.1s;
+}
+
+.title-texts:hover {
+    border: 1px solid blue;
+}
+
+i {
+    border: solid rgb(54, 54, 54);
+    border-width: 0 3px 3px 0;
+    display: inline-block;
+    padding: 3px;
+}
+
+.down-arrow {
+    transform: rotate(45deg);
+    float: right;
+    margin-right: 1%;
+    margin-top: 1%;
+}
+
+.up-arrow {
+    transform: rotate(-135deg);
+    float: right;
+    margin-right: 1%;
+    margin-top: 1%;
+}
+
+@keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
