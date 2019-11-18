@@ -23,6 +23,7 @@
     <!-- Script -->
     <script>
         let gdpVisible = false
+        let literacyVisible = false;
 
         async function login() {
             let username = document.getElementById('username').value
@@ -45,6 +46,7 @@
                     indicator.style.display = "block"
                 }
                 else if (response.status == 200) {
+                    ////// Setup Frontend elements //////
                     let indicator = document.getElementById('invalid-login')
                     let loginBox = document.getElementById('login-box')
                     loginBox.style.display = "none"
@@ -52,6 +54,8 @@
                     // indicator.style.display = "block"
                     // indicator.style.color = "green"
                     let mainWindow = document.getElementById('main')
+
+                    ////// Setup GDP endpoint box //////
                     let gdpWindow = document.createElement('div')
                     gdpWindow.id = 'gdp-window'
                     gdpWindow.className = 'endpoint-windows'
@@ -83,6 +87,43 @@
                     gdpMain.appendChild(debugElem)
                     gdpWindow.appendChild(gdpMain)
                     gdpTextElem.addEventListener('click', toggleGdpWindow, false)
+
+                    ////// Setup literacy endpoint box //////
+                    let literacyWindow = document.createElement("div");
+                    literacyWindow.id = 'literacy-window';
+                    literacyWindow.className = 'endpoint-windows';
+
+                    let literacyTextElem = document.createElement('p');
+                    literacyTextElem.id = 'literacy-title-text';
+                    literacyTextElem.className = 'title-texts';
+                    let literacyText = document.createTextNode("Literacy Rate Prediction (% of people ages 15 above)")
+
+                    arrow = document.createElement("i");
+                    arrow.className = "down-arrow";
+                    arrow.id = "literacy-arrow";
+
+                    literacyTextElem.appendChild(literacyText);
+                    literacyTextElem.appendChild(arrow);
+                    literacyWindow.appendChild(literacyTextElem);
+                    main.appendChild(literacyWindow);
+
+                    let literacyMain = document.createElement("div");
+                    literacyMain.className = "endpoint-box";
+                    literacyMain.id = "literacy-box";
+                    literacyMain.style.display= "none";
+
+                    debugElem = document.createElement('p')
+                    debugElem.id = "debug"
+                    text = document.createTextNode('Showing literacy Prediction')
+                    debugElem.appendChild(text)
+
+                    literacyMain.appendChild(debugElem)
+                    literacyWindow.appendChild(literacyMain)
+                    literacyTextElem.addEventListener('click', toggleLiteracyWindow, false)
+
+
+
+
                 }
                 let data = await response.json()
             }
@@ -106,10 +147,26 @@
                 gdpVisible = false
             }
         }
+
+        function toggleLiteracyWindow() {
+            let debug = document.getElementById('literacy-box')
+            let arrow = document.getElementById('literacy-arrow')
+
+            if (!literacyVisible) {
+                arrow.className = "up-arrow"
+                debug.style.display = "block"
+                literacyVisible = true
+            }
+            else {
+                arrow.className = "down-arrow"
+                debug.style.display = "none"
+                literacyVisible = false
+            }
+        }
         // async function getNumber() {
         //     let response = await fetch("http://127.0.0.1:5000/stuff")
         //     let data = await response.json()
-            
+
         //     let num = parseInt(JSON.stringify(data))
         //     console.log(num)
         //     if (document.getElementById('this-is-a-text')) {
