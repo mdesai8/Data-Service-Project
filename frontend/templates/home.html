@@ -24,6 +24,8 @@
     <script>
         let gdpVisible = false
         let literacyVisible = false;
+        let populationVisible = false;
+        let povertyVisible = false;
 
         async function login() {
             let username = document.getElementById('username').value
@@ -114,16 +116,78 @@
 
                     debugElem = document.createElement('p')
                     debugElem.id = "debug"
-                    text = document.createTextNode('Showing literacy Prediction')
+                    text = document.createTextNode('Showing Literacy Prediction')
                     debugElem.appendChild(text)
 
                     literacyMain.appendChild(debugElem)
                     literacyWindow.appendChild(literacyMain)
                     literacyTextElem.addEventListener('click', toggleLiteracyWindow, false)
 
+                    ////// Setup Population sendpoint box //////
+                    let populationWindow = document.createElement("div");
+                    populationWindow.id = 'population-window';
+                    populationWindow.className = 'endpoint-windows';
 
+                    let populationTextElem = document.createElement('p');
+                    populationTextElem.id = 'population-title-text';
+                    populationTextElem.className = 'title-texts';
+                    let populationText = document.createTextNode("Population Prediction");
 
+                    arrow = document.createElement("i");
+                    arrow.className = "down-arrow";
+                    arrow.id = "population-arrow";
 
+                    populationTextElem.appendChild(populationText);
+                    populationTextElem.appendChild(arrow);
+                    populationWindow.appendChild(populationTextElem);
+                    main.appendChild(populationWindow);
+
+                    let populationMain = document.createElement("div");
+                    populationMain.className = "endpoint-box";
+                    populationMain.id = "population-box";
+                    populationMain.style.display= "none";
+
+                    debugElem = document.createElement('p')
+                    debugElem.id = "debug"
+                    text = document.createTextNode('Showing population Prediction')
+                    debugElem.appendChild(text)
+
+                    populationMain.appendChild(debugElem)
+                    populationWindow.appendChild(populationMain)
+                    populationTextElem.addEventListener('click', togglePopulationWindow, false)
+
+                    ////// Setup Poverty endpoint box //////
+                    let povertyWindow = document.createElement("div");
+                    povertyWindow.id = 'poverty-window';
+                    povertyWindow.className = 'endpoint-windows';
+
+                    let povertyTextElem = document.createElement('p');
+                    povertyTextElem.id = 'poverty-title-text';
+                    povertyTextElem.className = 'title-texts';
+                    let povertyText = document.createTextNode("Poverty Prediction");
+
+                    arrow = document.createElement("i");
+                    arrow.className = "down-arrow";
+                    arrow.id = "poverty-arrow";
+
+                    povertyTextElem.appendChild(povertyText);
+                    povertyTextElem.appendChild(arrow);
+                    povertyWindow.appendChild(povertyTextElem);
+                    main.appendChild(povertyWindow);
+
+                    let povertyMain = document.createElement("div");
+                    povertyMain.className = "endpoint-box";
+                    povertyMain.id = "poverty-box";
+                    povertyMain.style.display= "none";
+
+                    debugElem = document.createElement('p')
+                    debugElem.id = "debug"
+                    text = document.createTextNode('Showing Poverty Predictions')
+                    debugElem.appendChild(text)
+
+                    povertyMain.appendChild(debugElem)
+                    povertyWindow.appendChild(povertyMain)
+                    povertyTextElem.addEventListener('click', togglePovertyWindow, false)
                 }
                 let data = await response.json()
             }
@@ -161,6 +225,38 @@
                 arrow.className = "down-arrow"
                 debug.style.display = "none"
                 literacyVisible = false
+            }
+        }
+
+        function togglePopulationWindow() {
+            let debug = document.getElementById('population-box')
+            let arrow = document.getElementById('population-arrow')
+
+            if (!populationVisible) {
+                arrow.className = "up-arrow"
+                debug.style.display = "block"
+                populationVisible = true
+            }
+            else {
+                arrow.className = "down-arrow"
+                debug.style.display = "none"
+                populationVisible = false
+            }
+        }
+
+        function togglePovertyWindow() {
+            let debug = document.getElementById('poverty-box')
+            let arrow = document.getElementById('poverty-arrow')
+
+            if (!povertyVisible) {
+                arrow.className = "up-arrow"
+                debug.style.display = "block"
+                povertyVisible = true
+            }
+            else {
+                arrow.className = "down-arrow"
+                debug.style.display = "none"
+                povertyVisible = false
             }
         }
         // async function getNumber() {
