@@ -5,6 +5,7 @@
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="static/styles/main.css" type="text/css">
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.bundle.min.js"></script>
     </head>
     <body>
         <p class="main-title"> Country Statistics </p>
@@ -16,7 +17,38 @@
         </div>
         <p class="invalid-login" id="invalid-login"> Invalid Credentials </p>
         <div class="main" id="main">
-
+            <div id="gdp-window" class="endpoint-windows">
+                <p onclick="toggleGdpWindow()" id="gdp-title-text" class="title-texts"> GDP Prediction 
+                    <i id="gdp-arrow" class="down-arrow"> </i>
+                </p>
+                <div id="gdp-box" class="endpoint-box">
+                    <p> Showing GDP Prediction </p>
+                </div>
+            </div>
+            <div id="literacy-window" class="endpoint-windows">
+                <p onclick="toggleLiteracyWindow()" id="literacy-title-text" class="title-texts"> Literacy Prediction 
+                    <i id="literacy-arrow" class="down-arrow"> </i>
+                </p>
+                <div id="literacy-box" class="endpoint-box">
+                    <p> Showing Literacy Prediction </p>
+                </div>
+            </div>
+            <div id="population-window" class="endpoint-windows">
+                <p onclick="togglePopulationWindow()" id="population-title-text" class="title-texts"> Population Prediction 
+                    <i id="population-arrow" class="down-arrow"> </i>
+                </p>
+                <div id="population-box" class="endpoint-box">
+                    <p> Showing Population Prediction </p>
+                </div>
+            </div>
+            <div id="poverty-window" class="endpoint-windows">
+                <p onclick="togglePovertyWindow()" id="poverty-title-text" class="title-texts"> Poverty Prediction 
+                    <i id="poverty-arrow" class="down-arrow"> </i>
+                </p>
+                <div id="poverty-box" class="endpoint-box">
+                    <p> Showing Poverty Prediction </p>
+                </div>
+            </div>
         </div>
         <!-- <div id="display"></div> -->
     </body>
@@ -48,148 +80,84 @@
                     indicator.style.display = "block"
                 }
                 else if (response.status == 200) {
-                    ////// Setup Frontend elements //////
+                    
+                    let respData = await response.json()
+                    let respX = JSON.parse(respData['bar_x']) 
+                    let respY = JSON.parse(respData['bar_y'])
+
+                    let xLabels = JSON.stringify(respX)
+
+                    let dataPoints = []
+
+                    for (i=0; i<respX.length; i++) {
+                        obj = {
+                            x: respX[i],
+                            y: respY[i]
+                        }
+                        dataPoints.push(obj)
+                    }
+
+                    let dataPointsString = JSON.stringify(dataPoints)
+
+                    console.log(dataPointsString)
+                    // console.log(dataPoints)
+
+                    let literacyBox = document.getElementById('literacy-box')
                     let indicator = document.getElementById('invalid-login')
                     let loginBox = document.getElementById('login-box')
                     loginBox.style.display = "none"
                     indicator.style.display = "none"
-                    // indicator.style.display = "block"
-                    // indicator.style.color = "green"
+                    
                     let mainWindow = document.getElementById('main')
+                    main.style.display = "block"
 
-                    ////// Setup GDP endpoint box //////
-                    let gdpWindow = document.createElement('div')
-                    gdpWindow.id = 'gdp-window'
-                    gdpWindow.className = 'endpoint-windows'
-
-                    let gdpTextElem = document.createElement('p')
-                    gdpTextElem.id = 'gdp-title-text'
-                    gdpTextElem.className = 'title-texts'
-                    let gdpText = document.createTextNode('GDP Prediction')
-
-                    let arrow = document.createElement('i')
-                    arrow.className = "down-arrow"
-                    arrow.id = "gdp-arrow"
-
-                    gdpTextElem.appendChild(gdpText)
-                    gdpTextElem.appendChild(arrow)
-                    gdpWindow.appendChild(gdpTextElem)
-                    main.appendChild(gdpWindow)
-
-                    let gdpMain = document.createElement('div')
-                    gdpMain.className = "endpoint-box"
-                    gdpMain.id = "gdp-box"
-                    gdpMain.style.display = "none"
-
-                    let debugElem = document.createElement('p')
-                    debugElem.id = "debug"
-                    let text = document.createTextNode('Showing GDP Prediction')
-                    debugElem.appendChild(text)
-
-                    gdpMain.appendChild(debugElem)
-                    gdpWindow.appendChild(gdpMain)
-                    gdpTextElem.addEventListener('click', toggleGdpWindow, false)
-
-                    ////// Setup literacy endpoint box //////
-                    let literacyWindow = document.createElement("div");
-                    literacyWindow.id = 'literacy-window';
-                    literacyWindow.className = 'endpoint-windows';
-
-                    let literacyTextElem = document.createElement('p');
-                    literacyTextElem.id = 'literacy-title-text';
-                    literacyTextElem.className = 'title-texts';
-                    let literacyText = document.createTextNode("Literacy Rate Prediction (% of people ages 15 above)")
-
-                    arrow = document.createElement("i");
-                    arrow.className = "down-arrow";
-                    arrow.id = "literacy-arrow";
-
-                    literacyTextElem.appendChild(literacyText);
-                    literacyTextElem.appendChild(arrow);
-                    literacyWindow.appendChild(literacyTextElem);
-                    main.appendChild(literacyWindow);
-
-                    let literacyMain = document.createElement("div");
-                    literacyMain.className = "endpoint-box";
-                    literacyMain.id = "literacy-box";
-                    literacyMain.style.display= "none";
-
-                    debugElem = document.createElement('p')
-                    debugElem.id = "debug"
-                    text = document.createTextNode('Showing Literacy Prediction')
-                    debugElem.appendChild(text)
-
-                    literacyMain.appendChild(debugElem)
-                    literacyWindow.appendChild(literacyMain)
-                    literacyTextElem.addEventListener('click', toggleLiteracyWindow, false)
-
-                    ////// Setup Population sendpoint box //////
-                    let populationWindow = document.createElement("div");
-                    populationWindow.id = 'population-window';
-                    populationWindow.className = 'endpoint-windows';
-
-                    let populationTextElem = document.createElement('p');
-                    populationTextElem.id = 'population-title-text';
-                    populationTextElem.className = 'title-texts';
-                    let populationText = document.createTextNode("Population Prediction");
-
-                    arrow = document.createElement("i");
-                    arrow.className = "down-arrow";
-                    arrow.id = "population-arrow";
-
-                    populationTextElem.appendChild(populationText);
-                    populationTextElem.appendChild(arrow);
-                    populationWindow.appendChild(populationTextElem);
-                    main.appendChild(populationWindow);
-
-                    let populationMain = document.createElement("div");
-                    populationMain.className = "endpoint-box";
-                    populationMain.id = "population-box";
-                    populationMain.style.display= "none";
-
-                    debugElem = document.createElement('p')
-                    debugElem.id = "debug"
-                    text = document.createTextNode('Showing population Prediction')
-                    debugElem.appendChild(text)
-
-                    populationMain.appendChild(debugElem)
-                    populationWindow.appendChild(populationMain)
-                    populationTextElem.addEventListener('click', togglePopulationWindow, false)
-
-                    ////// Setup Poverty endpoint box //////
-                    let povertyWindow = document.createElement("div");
-                    povertyWindow.id = 'poverty-window';
-                    povertyWindow.className = 'endpoint-windows';
-
-                    let povertyTextElem = document.createElement('p');
-                    povertyTextElem.id = 'poverty-title-text';
-                    povertyTextElem.className = 'title-texts';
-                    let povertyText = document.createTextNode("Poverty Prediction");
-
-                    arrow = document.createElement("i");
-                    arrow.className = "down-arrow";
-                    arrow.id = "poverty-arrow";
-
-                    povertyTextElem.appendChild(povertyText);
-                    povertyTextElem.appendChild(arrow);
-                    povertyWindow.appendChild(povertyTextElem);
-                    main.appendChild(povertyWindow);
-
-                    let povertyMain = document.createElement("div");
-                    povertyMain.className = "endpoint-box";
-                    povertyMain.id = "poverty-box";
-                    povertyMain.style.display= "none";
-
-                    debugElem = document.createElement('p')
-                    debugElem.id = "debug"
-                    text = document.createTextNode('Showing Poverty Predictions')
-                    debugElem.appendChild(text)
-
-                    povertyMain.appendChild(debugElem)
-                    povertyWindow.appendChild(povertyMain)
-                    povertyTextElem.addEventListener('click', togglePovertyWindow, false)
+                    let canvas = document.createElement('canvas')
+                    canvas.id = "gdp-chart"
+                    canvas.height = 450
+                    canvas.width = 850
+                    // <canvas id="myChart" width="400" height="400"></canvas>
+                        // <script>
+                    let canvasScript = document.createElement('script')
+                    canvasScript.type = "text/javascript"
+                    canvasScript.innerHTML = `
+                        var ctx = document.getElementById('gdp-chart').getContext('2d');
+                        var myChart = new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels: ${xLabels},
+                                datasets: [{
+                                    label: 'Literacy Rate (% of people above age 15)',
+                                    data: ${dataPointsString},
+                                    backgroundColor: "blue",
+                                    borderColor: "rgb(161, 164, 255)",
+                                    fill: false
+                                }]
+                            },
+                            options: {
+                                scales: {
+                                    yAxes: [{
+                                        scaleLabel: {
+                                            display: true,
+                                        },
+                                        ticks: {
+                                            autoSkip: false,
+                                            // maxRotation: 90,
+                                            // minRotation: 90
+                                        }
+                                    }],
+                                    xAxes: [{
+                                        ticks: {
+                                            autoSkip: false,
+                                            maxRotation: 90,
+                                            minRotation: 90
+                                        }
+                                    }]
+                                }
+                            }
+                        });`
+                        canvas.appendChild(canvasScript)
+                        literacyBox.appendChild(canvas)
                 }
-                let data = await response.json()
             }
             catch (error) {
                 alert(error)
@@ -204,6 +172,55 @@
                 arrow.className = "up-arrow"
                 debug.style.display = "block"
                 gdpVisible = true
+
+                // let canvas = document.createElement('canvas')
+                // canvas.id = "gdp-chart"
+                // canvas.height = 400
+                // canvas.width = 400
+                // // <canvas id="myChart" width="400" height="400"></canvas>
+                //     // <script>
+                // let canvasScript = document.createElement('script')
+                // canvasScript.type = "text/javascript"
+                // canvasScript.innerHTML = `
+                //     var ctx = document.getElementById('gdp-chart').getContext('2d');
+                //     var myChart = new Chart(ctx, {
+                //         type: 'bar',
+                //         data: {
+                //             labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+                //             datasets: [{
+                //                 label: '# of Votes',
+                //                 data: [12, 19, 3, 5, 2, 3],
+                //                 backgroundColor: [
+                //                     'rgba(255, 99, 132, 0.2)',
+                //                     'rgba(54, 162, 235, 0.2)',
+                //                     'rgba(255, 206, 86, 0.2)',
+                //                     'rgba(75, 192, 192, 0.2)',
+                //                     'rgba(153, 102, 255, 0.2)',
+                //                     'rgba(255, 159, 64, 0.2)'
+                //                 ],
+                //                 borderColor: [
+                //                     'rgba(255, 99, 132, 1)',
+                //                     'rgba(54, 162, 235, 1)',
+                //                     'rgba(255, 206, 86, 1)',
+                //                     'rgba(75, 192, 192, 1)',
+                //                     'rgba(153, 102, 255, 1)',
+                //                     'rgba(255, 159, 64, 1)'
+                //                 ],
+                //                 borderWidth: 1
+                //             }]
+                //         },
+                //         options: {
+                //             scales: {
+                //                 yAxes: [{
+                //                     ticks: {
+                //                         beginAtZero: true
+                //                     }
+                //                 }]
+                //             }
+                //         }
+                //     });`
+                //     canvas.appendChild(canvasScript)
+                //     debug.appendChild(canvas)
             }
             else {
                 arrow.className = "down-arrow"
