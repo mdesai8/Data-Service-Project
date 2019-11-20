@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+    <head>
+        <meta charset="utf-8">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="static/styles/main.css" type="text/css">
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.bundle.min.js"></script>
+    </head>
+    <body>
+        <p class="main-title"> Country Statistics </p>
+        <div class="login-box" id="login-box">
+            <input type="text" id="username" class="username" placeholder="Enter username..."> <br/>
+            <input id="password" class="password" type="password" placeholder="Enter password..."> <br/>
+            <button id="login-button" class="login-button" onclick="login()"> Login </button>
+            <!-- <button id="number" onclick="getNumber()"> Click </button> -->
+        </div>
+        <p class="invalid-login" id="invalid-login"> Invalid Credentials </p>
+        <div class="main" id="main">
+            <div id="gdp-window" class="endpoint-windows">
+                <p onclick="toggleGdpWindow()" id="gdp-title-text" class="title-texts"> GDP Prediction 
+                    <i id="gdp-arrow" class="down-arrow"> </i>
+                </p>
+                <div id="gdp-box" class="endpoint-box">
+                    <p> Showing GDP Prediction </p>
+                </div>
+            </div>
+            <div id="literacy-window" class="endpoint-windows">
+                <p onclick="toggleLiteracyWindow()" id="literacy-title-text" class="title-texts"> Literacy Prediction 
+                    <i id="literacy-arrow" class="down-arrow"> </i>
+                </p>
+                <div id="literacy-box" class="endpoint-box">
+                    <p> Showing Literacy Prediction </p>
+                </div>
+            </div>
+            <div id="population-window" class="endpoint-windows">
+                <p onclick="togglePopulationWindow()" id="population-title-text" class="title-texts"> Population Prediction 
+                    <i id="population-arrow" class="down-arrow"> </i>
+                </p>
+                <div id="population-box" class="endpoint-box">
+                    <p> Showing Population Prediction </p>
+                </div>
+            </div>
+            <div id="poverty-window" class="endpoint-windows">
+                <p onclick="togglePovertyWindow()" id="poverty-title-text" class="title-texts"> Poverty Prediction 
+                    <i id="poverty-arrow" class="down-arrow"> </i>
+                </p>
+                <div id="poverty-box" class="endpoint-box">
+                    <p> Showing Poverty Prediction </p>
+                </div>
+            </div>
+        </div>
+        <!-- <div id="display"></div> -->
+    </body>
+    <!-- Script -->
+    <script>
+        let gdpVisible = false
+        let literacyVisible = false;
+        let populationVisible = false;
+        let povertyVisible = false;
+
+        async function login() {
+            let username = document.getElementById('username').value
+            let password = document.getElementById('password').value
+
+            let body = {
+                "username": username,
+                "password": password,
+            }
+
+            try {
+                let response = await fetch("http://127.0.0.1:5000/authentication", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                })
+
+                if (response.status == 400) {
+                    let indicator = document.getElementById('invalid-login')
+                    indicator.style.display = "block"
+                }
+                else if (response.status == 200) {
+                    
+                    let respData = await response.json()
+                    let respX = JSON.parse(respData['bar_x']) 
+                    let respY = JSON.parse(respData['bar_y'])
+
+                    let xLabels = JSON.stringify(respX)
+
+                    let dataPoints = []
+
+                    for (i=0; i<respX.length; i++) {
+                        obj = {
+                            x: respX[i],
+                            y: respY[i]
+                        }
+                        dataPoints.push(obj)
+                    }
+
+                    let dataPointsString = JSON.stringify(dataPoints)
+
+                    console.log(dataPointsString)
+                    // console.log(dataPoints)
+
+                    let literacyBox = document.getElementById('literacy-box')
+                    let indicator = document.getElementById('invalid-login')
+                    let loginBox = document.getElementById('login-box')
+                    loginBox.style.display = "none"
+                    indicator.style.display = "none"
+                    
+                    let mainWindow = document.getElementById('main')
+                    main.style.display = "block"
+
+                    let canvas = document.createElement('canvas')
+                    canvas.id = "gdp-chart"
+                    canvas.height = 450
+                    canvas.width = 850
+                    // <canvas id="myChart" width="400" height="400"></canvas>
+                        // <script>
+                    let canvasScript = document.createElement('script')
+                    canvasScript.type = "text/javascript"
+                    canvasScript.innerHTML = `
+                        var ctx = document.getElementById('gdp-chart').getContext('2d');
+                        var myChart = new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels: ${xLabels},
+                                datasets: [{
+                                    label: 'Literacy Rate (% of people above age 15)',
+                                    data: ${dataPointsString},
+                                    backgroundColor: "blue",
+                                    borderColor: "rgb(161, 164, 255)",
+                                    fill: false
+                                }]
+                            },
+                            options: {
+                                scales: {
+                                    yAxes: [{
+                                        scaleLabel: {
+                                            display: true,
+                                        },
+                                        ticks: {
+                                            autoSkip: false,
+                                            // maxRotation: 90,
+                                            // minRotation: 90
+                                        }
+                                    }],
+                                    xAxes: [{
+                                        ticks: {
+                                            autoSkip: false,
+                                            maxRotation: 90,
+                                            minRotation: 90
+                                        }
+                                    }]
+                                }
+                            }
+                        });`
+                        canvas.appendChild(canvasScript)
+                        literacyBox.appendChild(canvas)
+                }
+            }
+            catch (error) {
+                alert(error)
+            }
+        }
+
+        function toggleGdpWindow() {
+            let debug = document.getElementById('gdp-box')
+            let arrow = document.getElementById('gdp-arrow')
+
+            if (!gdpVisible) {
+                arrow.className = "up-arrow"
+                debug.style.display = "block"
+                gdpVisible = true
+
+                // let canvas = document.createElement('canvas')
+                // canvas.id = "gdp-chart"
+                // canvas.height = 400
+                // canvas.width = 400
+                // // <canvas id="myChart" width="400" height="400"></canvas>
+                //     // <script>
+                // let canvasScript = document.createElement('script')
+                // canvasScript.type = "text/javascript"
+                // canvasScript.innerHTML = `
+                //     var ctx = document.getElementById('gdp-chart').getContext('2d');
+                //     var myChart = new Chart(ctx, {
+                //         type: 'bar',
+                //         data: {
+                //             labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+                //             datasets: [{
+                //                 label: '# of Votes',
+                //                 data: [12, 19, 3, 5, 2, 3],
+                //                 backgroundColor: [
+                //                     'rgba(255, 99, 132, 0.2)',
+                //                     'rgba(54, 162, 235, 0.2)',
+                //                     'rgba(255, 206, 86, 0.2)',
+                //                     'rgba(75, 192, 192, 0.2)',
+                //                     'rgba(153, 102, 255, 0.2)',
+                //                     'rgba(255, 159, 64, 0.2)'
+                //                 ],
+                //                 borderColor: [
+                //                     'rgba(255, 99, 132, 1)',
+                //                     'rgba(54, 162, 235, 1)',
+                //                     'rgba(255, 206, 86, 1)',
+                //                     'rgba(75, 192, 192, 1)',
+                //                     'rgba(153, 102, 255, 1)',
+                //                     'rgba(255, 159, 64, 1)'
+                //                 ],
+                //                 borderWidth: 1
+                //             }]
+                //         },
+                //         options: {
+                //             scales: {
+                //                 yAxes: [{
+                //                     ticks: {
+                //                         beginAtZero: true
+                //                     }
+                //                 }]
+                //             }
+                //         }
+                //     });`
+                //     canvas.appendChild(canvasScript)
+                //     debug.appendChild(canvas)
+            }
+            else {
+                arrow.className = "down-arrow"
+                debug.style.display = "none"
+                gdpVisible = false
+            }
+        }
+
+        function toggleLiteracyWindow() {
+            let debug = document.getElementById('literacy-box')
+            let arrow = document.getElementById('literacy-arrow')
+
+            if (!literacyVisible) {
+                arrow.className = "up-arrow"
+                debug.style.display = "block"
+                literacyVisible = true
+            }
+            else {
+                arrow.className = "down-arrow"
+                debug.style.display = "none"
+                literacyVisible = false
+            }
+        }
+
+        function togglePopulationWindow() {
+            let debug = document.getElementById('population-box')
+            let arrow = document.getElementById('population-arrow')
+
+            if (!populationVisible) {
+                arrow.className = "up-arrow"
+                debug.style.display = "block"
+                populationVisible = true
+            }
+            else {
+                arrow.className = "down-arrow"
+                debug.style.display = "none"
+                populationVisible = false
+            }
+        }
+
+        function togglePovertyWindow() {
+            let debug = document.getElementById('poverty-box')
+            let arrow = document.getElementById('poverty-arrow')
+
+            if (!povertyVisible) {
+                arrow.className = "up-arrow"
+                debug.style.display = "block"
+                povertyVisible = true
+            }
+            else {
+                arrow.className = "down-arrow"
+                debug.style.display = "none"
+                povertyVisible = false
+            }
+        }
+        // async function getNumber() {
+        //     let response = await fetch("http://127.0.0.1:5000/stuff")
+        //     let data = await response.json()
+
+        //     let num = parseInt(JSON.stringify(data))
+        //     console.log(num)
+        //     if (document.getElementById('this-is-a-text')) {
+        //         let displayNode = document.getElementById('this-is-a-text')
+        //         displayNode.textContent = num
+        //     }
+
+        //     else {
+        //         let displayNode = document.createElement('p')
+        //         displayNode.id = 'this-is-a-text'
+        //         let t = document.createTextNode(num)
+        //         displayNode.appendChild(t)
+        //         document.getElementById('display').appendChild(displayNode)
+        //     }
+        // }
+    </script>
+    <!-- End Script -->
+</html>

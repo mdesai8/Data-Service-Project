@@ -48,11 +48,12 @@ body {
 
 .main {
     margin-top: 60px;
+    display: none;
 }
 
 .endpoint-windows {
-    width: 70%;
-    margin-left: 15%;
+    width: 80%;
+    margin-left: 10%;
     text-align: left;
     animation: fadein 0.2s;
 }
@@ -61,6 +62,7 @@ body {
     /* margin-top: 5px; */
     border: 1px solid black;
     border-radius: 2px;
+    display: none;
 }
 
 .title-texts {
@@ -70,11 +72,13 @@ body {
     font-size: 16pt;
     margin-left: 0;
     border: 1px solid rgb(197, 201, 255);
-    transition: border 0.1s;
+    transition: background-color 0.1s, color 0.1s;
 }
 
 .title-texts:hover {
-    border: 1px solid blue;
+    transition: background-color 0.1s;
+    background-color: rgb(73, 73, 240);
+    color: white;
 }
 
 i {
