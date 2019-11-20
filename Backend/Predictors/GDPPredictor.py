@@ -8,12 +8,12 @@ from sklearn.linear_model import LinearRegression
 np.set_printoptions(suppress=True)
 pd.set_option('display.float_format', lambda x: '%.3f' % x)
 
-DATASET_FILEPATH = "../Datasets/gdp.csv"
-
 class GDPPredictor(Object):
 
+    DATASET_FILEPATH = "../Datasets/gdp.csv"
+
     def __init__(self):
-        self._self._df_gdp = pd.read_csv(DATASET_FILEPATH, skiprows=3)
+        self._self._df_gdp = pd.read_csv(self.DATASET_FILEPATH, skiprows=3)
         self._self._df_gdp.head()
 
         self._self._df_gdp = self._df_gdp.drop("Unnamed: 64",axis=1)
@@ -41,11 +41,11 @@ class GDPPredictor(Object):
 
         self._GDP_stacked_df['encoded'] = self._le.fit_transform(self._GDP_stacked_df["Country Name"].values)
 
-        X = self._GDP_stacked_df[['encoded','variable']]
-        X = np.array(X)
+        self._X = self._GDP_stacked_df[['encoded','variable']]
+        self._X = np.array(X)
 
-        y = self._GDP_stacked_df['value']
-        y = np.array(y)
+        self._y = self._GDP_stacked_df['value']
+        self._y = np.array(y)
 
         self._model = LinearRegression()
         self._model.fit(X , y)
