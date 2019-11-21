@@ -1,9 +1,3 @@
-
-
-######
-# USE 'routes.py' IN ROOT FOLDER
-######
-
 # from server import *
 from flask import Flask, request, send_file
 from flask_restplus import Resource, Api

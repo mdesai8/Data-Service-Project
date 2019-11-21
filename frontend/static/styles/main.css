@@ -65,6 +65,76 @@ body {
     display: none;
 }
 
+.endpoint-url {
+    margin-left: 2%;
+    font-size: 14pt;
+    /* background-color: orange; */
+    /* padding: 5px; */
+    /* width: 90%; */
+}
+
+.endpoint-url > a {
+    display: inline;
+    font-size: 14pt;
+    font-family: monospace;
+    font-weight: bold;
+    color: rgb(221, 43, 43);
+}
+
+.endpoint-desc {
+    margin-left: 2%;
+    font-size: 14pt;
+}
+
+.prediction-image {
+    width: 70%;
+    height: 400px;
+    margin-left: 15%;
+    margin-bottom: 10px;
+}
+
+.predicted-value-title {
+    font-weight: 600;
+    font-size: 14pt;
+    text-align: center;
+}
+
+.predicted-value {
+    font-size: 14pt;
+    color: green;
+    text-align: center;
+}
+
+.select-country {
+    height: 30px;
+    width: 200px;
+    margin-left: 250px;
+    margin-bottom: 10px;
+}
+
+.select-year {
+    /* display: inline-block; */
+    height: 30px;
+    width: 200px;
+    margin-left: 20px;
+}
+
+.button {
+    margin-left: 20px;
+    height: 30px;
+    width: 100px;
+    border: 1px solid rgb(41, 41, 194);
+    background-color: rgb(41, 41, 194);
+    color: white;
+    text-align: center;
+}
+
+.button:hover {
+    cursor: pointer;
+    border: 1px solid rgb(78, 78, 196);
+    background-color: rgb(78, 78, 196);
+}
+
 .title-texts {
     cursor: pointer;
     background-color: rgb(197, 201, 255);
