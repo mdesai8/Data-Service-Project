@@ -17,8 +17,8 @@ np.set_printoptions(suppress=True)
 pd.set_option('display.float_format', lambda x: '%.3f' % x)
 from sklearn.linear_model import LinearRegression
 
-if __name__ == "__main__":
-    print("--------------- CO2 Emission -------------")
+
+def predictCO2(country, year):
     df_fr = pd.read_csv('Backend/Datasets/CO2.csv', error_bad_lines=False, skiprows=4)
     df_fr = df_fr.drop(['Country Code','Indicator Name','Indicator Code','Unnamed: 64'], axis=1)
     df_fr = df_fr.set_index('Country Name')
@@ -46,12 +46,14 @@ if __name__ == "__main__":
     model = KNeighborsRegressor(n_neighbors=3)
     model.fit(X , y)
 
-    cont = input("Enter Country Name :")
-    year = int(input("Enter year :"))
-    enc = FR_Stacked_df.encoded[FR_Stacked_df["Country Name"]==cont].unique()[0]
+    enc = FR_Stacked_df.encoded[FR_Stacked_df["Country Name"]==country].unique()[0]
     predicted = model.predict([[enc, year]]).astype(float)
-    print("Predicted CO2 emission: ",predicted[0],"kt")
-
-    new_df=FR_Stacked_df[FR_Stacked_df["Country Name"]==cont]
+    new_df=FR_Stacked_df[FR_Stacked_df["Country Name"]==country]
     sns.lineplot(x="variable" , y="value",data=new_df)
-    plt.show()
+    plt.xlabel("Years")
+    plt.ylabel("COS Emission")
+    plt.title("COS Emissions for " + country)
+    plt.savefig("predicted_images/CO2Emission.png")
+    plt.close()
+
+    return predicted[0]

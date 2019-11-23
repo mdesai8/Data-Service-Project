@@ -1,11 +1,12 @@
 # from server import *
 from flask import Flask, request, send_file
 from flask_restplus import Resource, Api
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 # from Predictors.LiteracyPredictor import *
 from flask import request
 from flask_restplus import fields
 from lifeexpec_predict import *
+from predictCO2 import *
 import json
 import base64
 
@@ -82,6 +83,33 @@ class Life_Expectancy(Resource):
             encoded_image = encoded_image[:-1]
 
             return {"predicted_value": p_le, "image": "data:image/png;base64,"+encoded_image}, 200
+
+@api.route("/co2_emission")
+#@cross_origin()
+class CO2_Emission(Resource):
+    @api.response(200, "Successful")
+    @api.response(404, "Country name does not exist")
+    @api.response(400, "Malformed Request")
+    @api.doc(description="Obtain the predicted CO2 Emission of a country for a particular year")
+    @api.expect(input_model, validate=True)
+    def post(self):
+        body = request.json
+
+
+        if 'year' not in body or 'country_name' not in body:
+            return {"message": "No year or country provided"}, 400
+
+        country = body['country_name']
+        year = body['year']
+        predictedEmission = predictCO2(country, year)
+
+        with open("predicted_images/CO2Emission.png", "rb") as imageFile:
+            encoded_image = str(base64.b64encode(imageFile.read()))[2:]
+            encoded_image = encoded_image[:-1]
+
+            return {"predicted_value" : predictedEmission,
+                    "image": "data:image/png;base64,"+encoded_image}, 200
+
 
 if __name__ == "__main__":
     auth = Authentication(False)
