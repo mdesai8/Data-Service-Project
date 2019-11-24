@@ -1,3 +1,13 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Nov 14 20:44:22 2019
+
+@author: bhumikasinghal
+"""
+
+import matplotlib
+matplotlib.use('Agg') # Need to add this otherwise server closes unexpectedly
 import pandas as pd
 from matplotlib import pyplot as plt
 import seaborn as sns
@@ -8,62 +18,59 @@ from sklearn.neighbors import KNeighborsRegressor
 np.set_printoptions(suppress=True)
 pd.set_option('display.float_format', lambda x: '%.3f' % x)
 from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LogisticRegression
 
-if __name__ == "__main__":
-    print("--------------- GDP-------------")
-    df_gdp = pd.read_csv("../Datasets/gdp.csv",skiprows=3)
-    df_gdp.head()
-
-    df_gdp = df_gdp.drop("Unnamed: 64",axis=1)
-    df_gdp = df_gdp.drop("2019",axis=1)
-
-    df_gdp.describe(include='all')
-
-    df_gdp = df_gdp.drop(["Indicator Name","Indicator Code"],axis=1)
-
-    GDP_Stacked_df = pd.melt(df_gdp,id_vars=['Country Name','Country Code'])
-
-    #print(GDP_Stacked_df.head())
-
-    GDP_Stacked_df.loc[GDP_Stacked_df['value'].isnull(), 'value'] = GDP_Stacked_df['Country Name'].map(GDP_Stacked_df.groupby('Country Name')['value'].mean())
-
-    GDP_Stacked_df = GDP_Stacked_df.dropna(axis=0)
-    #print(GDP_Stacked_df.head())
-    GDP_Stacked_df=GDP_Stacked_df.set_index("Country Name")
-
-    GDP_Stacked_df['variable'] = GDP_Stacked_df['variable'].astype(float)
-
-    #sns.regplot(x="variable", y="value", data=GDP_Stacked_df);
+def gdp_predicted(cont, year):
+    # print("--------------- GDP -------------")      
+    df_le = pd.read_csv('Backend/Datasets/gdp.csv', error_bad_lines=False, skiprows=4)
+    df_le = df_le.drop(['Country Code','Indicator Name','Indicator Code','2018','2019','Unnamed: 64'], axis=1)
+    df_le = df_le.set_index('Country Name')
+    df_le = df_le.dropna(how = 'all', axis=0)
+    df_le = df_le[df_le.isnull().sum(axis=1) <= 20]
+    df_le = df_le.ffill(axis=1)
+    df_le = df_le.bfill(axis=1)
+    #print(df_fr.shape)
+    df_le = df_le.reset_index()
+    LE_Stacked_df = pd.melt(df_le,id_vars=['Country Name'])
+    LE_Stacked_df = LE_Stacked_df.set_index("Country Name")
+    LE_Stacked_df['variable'] = LE_Stacked_df['variable'].astype(float)
+    #sns.regplot(x="variable", y="value", data=LE_Stacked_df);
     #plt.show()
-
+    
     le = preprocessing.LabelEncoder()
-
-    GDP_Stacked_df= GDP_Stacked_df.reset_index()
-    GDP_Stacked_df.head()
-
-    GDP_Stacked_df['encoded'] = le.fit_transform(GDP_Stacked_df["Country Name"].values)
-
-    X = GDP_Stacked_df[['encoded','variable']]
+    LE_Stacked_df = LE_Stacked_df.reset_index()
+    LE_Stacked_df['encoded'] = le.fit_transform(LE_Stacked_df["Country Name"].values)
+    X = LE_Stacked_df[['encoded','variable']]
     X = np.array(X)
-
-    y = GDP_Stacked_df['value']
+    y = LE_Stacked_df['value']
     y = np.array(y)
-    print(GDP_Stacked_df[GDP_Stacked_df["encoded"]==11])
-    #X_train, X_val, Y_train, Y_val = train_test_split(X_train_val, Y_train_val, test_size=0.15/0.85, random_state=0)
-
+    
     model = LinearRegression()
     model.fit(X , y)
 
-    cont = input("Enter Country Name :")
-    year = int(input("Enter year :"))
-    enc = GDP_Stacked_df.encoded[GDP_Stacked_df["Country Name"]==cont].unique()[0]
-
-
-
+    # cont = input("Enter Country Name :")
+    # year = int(input("Enter year :"))
+    enc = LE_Stacked_df.encoded[LE_Stacked_df["Country Name"]==cont].unique()[0]
     predicted = model.predict([[enc, year]]).astype(float)
-    print("Predicted GDP: ",predicted[0],"US$")
+    # print("Predicted Life Expectancy: ",predicted[0])
 
 
-    new_df=GDP_Stacked_df[GDP_Stacked_df["Country Name"]==cont]
-    sns.lineplot(x="variable" , y="value",data=new_df)
-    plt.show()
+    year = int(year)
+
+    new_df=LE_Stacked_df[LE_Stacked_df["Country Name"]==cont]
+
+    predicted_df = pd.DataFrame({"Country Name": [cont],
+                                 "variable": [year],
+                                 "value": [predicted[0]],
+                                 "encoded": 9})
+    new_df = new_df.append(predicted_df, ignore_index=True)
+
+    # print(new_df.to_string())
+    sns.regplot(x="variable" , y="value",data=new_df)
+    plt.xlabel("Years")
+    plt.ylabel("Life Expectancy")
+    plt.title("Life Expectancy for " + cont)
+    plt.savefig("predicted_images/life_expec.png")
+    plt.close()
+    return predicted[0]
+
