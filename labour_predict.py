@@ -16,8 +16,8 @@ np.set_printoptions(suppress=True)
 pd.set_option('display.float_format', lambda x: '%.3f' % x)
 from sklearn.linear_model import LinearRegression
 
-if __name__ == "__main__":
-    print("--------------- Total Labour Force -------------")
+def predicted_labour(country, year):
+    #print("--------------- Total Labour Force -------------")
     df_fr = pd.read_csv('labour.csv', error_bad_lines=False, skiprows=4)
     df_fr = df_fr.drop(['Country Code','Indicator Name','Indicator Code','Unnamed: 64'], axis=1)
     df_fr = df_fr.set_index('Country Name')
@@ -44,16 +44,24 @@ if __name__ == "__main__":
     
     model = LinearRegression()
     model.fit(X , y)
-    
-    cont = input("Enter Country Name :")
-    year = int(input("Enter year :"))
+  
+    #cont = input("Enter Country Name :")
+    #year = int(input("Enter year :"))
     enc = FR_Stacked_df.encoded[FR_Stacked_df["Country Name"]==cont].unique()[0]
     predicted = model.predict([[enc, year]]).astype(int)
-    predicted=str(predicted[0])
-    print("Predicted Total Labour Force: ",predicted[:-1])
-    
+    year = int(year)
     new_df=FR_Stacked_df[FR_Stacked_df["Country Name"]==cont]
+    predicted_df = pd.DataFrame({"Country Name": [cont],
+                                 "variable": [year],
+                                  "value": [predicted[0]],
+                                 "encoded": 9})
+    new_df = new_df.append(predicted_df, ignore_index=True)
+    #print("Predicted Total Labour Force: ",predicted[:-1])
     sns.lineplot(x="variable" , y="value",data=new_df)
-    plt.show()
-    
-    
+    plt.xlabel("Years")
+    plt.ylabel("Labour Force")
+    plt.title("Labour force for " + cont)
+    plt.savefig("predicted_images/labour.png")
+    plt.close()
+    #plt.show()
+    return predicted[0]
