@@ -46,6 +46,9 @@ def predictCO2(country, year):
     model = KNeighborsRegressor(n_neighbors=3)
     model.fit(X , y)
 
+    if (len(FR_Stacked_df.encoded[FR_Stacked_df["Country Name"]==country].unique()) == 0):
+        return False
+
     enc = FR_Stacked_df.encoded[FR_Stacked_df["Country Name"]==country].unique()[0]
     predicted = model.predict([[enc, year]]).astype(float)
     new_df=FR_Stacked_df[FR_Stacked_df["Country Name"]==country]

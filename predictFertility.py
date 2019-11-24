@@ -45,9 +45,19 @@ def pred_fertility(country,year):
     model = LinearRegression()
     model.fit(X , y)
 
+    if (len(FR_Stacked_df.encoded[FR_Stacked_df["Country Name"]==country].unique()) == 0):
+        return False
+        
     enc = FR_Stacked_df.encoded[FR_Stacked_df["Country Name"]==country].unique()[0]
     predicted = model.predict([[enc, year]]).astype(float)
     new_df=FR_Stacked_df[FR_Stacked_df["Country Name"]==country]
+
+    predicted_df = pd.DataFrame({"Country Name": [country],
+                                 "variable": [year],
+                                 "value": [predicted[0]],
+                                 "encoded": 7})
+    new_df = new_df.append(predicted_df, ignore_index=True)
+
     sns.lineplot(x="variable" , y="value",data=new_df)
     plt.xlabel("Years")
     plt.ylabel("Fertility Rate")

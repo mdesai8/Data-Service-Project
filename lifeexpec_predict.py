@@ -50,6 +50,9 @@ def predicted_life_expec(cont, year):
 
     # cont = input("Enter Country Name :")
     # year = int(input("Enter year :"))
+    if (len(LE_Stacked_df.encoded[LE_Stacked_df["Country Name"]==cont].unique()) == 0):
+        return False
+
     enc = LE_Stacked_df.encoded[LE_Stacked_df["Country Name"]==cont].unique()[0]
     predicted = model.predict([[enc, year]]).astype(float)
     # print("Predicted Life Expectancy: ",predicted[0])

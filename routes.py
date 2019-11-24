@@ -6,9 +6,10 @@ from flask_cors import CORS, cross_origin
 from flask import request
 from flask_restplus import fields
 from lifeexpec_predict import *
-from labour_predict import *
 from predictCO2 import *
 from gdp_predict import *
+from predictFertility import *
+from labour_predict import *
 import json
 import base64
 
@@ -80,6 +81,9 @@ class Life_Expectancy(Resource):
         year = body['year']
         p_le = predicted_life_expec(country, year)
 
+        if p_le == False:
+            return {"message": "Country does not exist"}, 404
+
         with open("predicted_images/life_expec.png", "rb") as imageFile:
             encoded_image = str(base64.b64encode(imageFile.read()))[2:]
             encoded_image = encoded_image[:-1]
@@ -103,6 +107,10 @@ class Predict_gdp(Resource):
         country = body['country_name']
         year = body['year']
         predicted_gdp = gdp_predicted(country, year)
+
+        if predicted_gdp == False:
+            return {"message": "Country does not exist"}, 404
+
         predicted_gdp = str(predicted_gdp)
         predicted_gdp = predicted_gdp+" US$"
 
@@ -128,6 +136,10 @@ class Labour(Resource):
         country = body['country_name']
         year = body['year']
         labourPred = predicted_labour(country, year)
+
+        if labourPred == False:
+            return {"message": "Country does not exist"}, 404
+
         labourPred=str(labourPred)
 
         with open("predicted_images/labour.png", "rb") as imageFile:
@@ -155,12 +167,45 @@ class CO2_Emission(Resource):
         year = body['year']
         predictedEmission = predictCO2(country, year)
 
+        if predictedEmission == False:
+            return {"message": "Country does not exist"}, 404
+
         with open("predicted_images/CO2Emission.png", "rb") as imageFile:
             encoded_image = str(base64.b64encode(imageFile.read()))[2:]
             encoded_image = encoded_image[:-1]
 
             return {"predicted_value" : predictedEmission,
                     "image": "data:image/png;base64,"+encoded_image}, 200
+
+@api.route("/fertility_rate")
+#@cross_origin()
+class Fertility_Rate(Resource):
+    @api.response(200, "Successful")
+    @api.response(404, "Country name does not exist")
+    @api.response(400, "Malformed Request")
+    @api.doc(description="Obtain the predicted Fertility rate of a country for a particular year")
+    @api.expect(input_model, validate=True)
+    def post(self):
+        body = request.json
+
+
+        if 'year' not in body or 'country_name' not in body:
+            return {"message": "No year or country provided"}, 400
+
+        country = body['country_name']
+        year = body['year']
+        predictedFertility = pred_fertility(country, year)
+
+        if predictedFertility == False:
+            return {"message": "Country does not exist"}, 404
+
+        with open("predicted_images/FertilityRate.png", "rb") as imageFile:
+            encoded_image = str(base64.b64encode(imageFile.read()))[2:]
+            encoded_image = encoded_image[:-1]
+
+            return {"predicted_value" : predictedFertility,
+                    "image": "data:image/png;base64,"+encoded_image}, 200
+
 
 
 if __name__ == "__main__":
