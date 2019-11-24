@@ -66,11 +66,11 @@ def gdp_predicted(cont, year):
     new_df = new_df.append(predicted_df, ignore_index=True)
 
     # print(new_df.to_string())
-    sns.regplot(x="variable" , y="value",data=new_df)
+    sns.lineplot(x="variable" , y="value",data=new_df)
     plt.xlabel("Years")
-    plt.ylabel("Life Expectancy")
-    plt.title("Life Expectancy for " + cont)
-    plt.savefig("predicted_images/life_expec.png")
+    plt.ylabel("GDP")
+    plt.title("GDP for " + cont)
+    plt.savefig("predicted_images/gdp.png")
     plt.close()
     return predicted[0]
 
