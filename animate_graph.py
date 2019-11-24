@@ -115,7 +115,7 @@ def animate_data(file_x,file_y):
 	
 
 # In[ ]:
-df,file_x,file_y=animate_data('CO2.csv','gdp.csv')
+df,file_x,file_y=animate_data(file1,file2)
 
 years = df['Year'].unique().tolist()
 
