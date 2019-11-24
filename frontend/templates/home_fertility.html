@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+    <head>
+        <meta charset="utf-8">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="static/styles/main.css" type="text/css">
+        <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.bundle.min.js"></script> -->
+    </head>
+    <body>
+        <p class="main-title"> Country Statistics </p>
+        <div class="login-box" id="login-box">
+            <input type="text" id="username" class="username" placeholder="Enter username..."> <br/>
+            <input id="password" class="password" type="password" placeholder="Enter password..."> <br/>
+            <button id="login-button" class="login-button" onclick="login()"> Login </button>
+            <!-- <button id="number" onclick="getNumber()"> Click </button> -->
+        </div>
+        <p class="invalid-login" id="invalid-login"> Invalid Credentials </p>
+        <div class="main" id="main">
+            <div id="gdp-window" class="endpoint-windows">
+                <p onclick="toggleGdpWindow()" id="gdp-title-text" class="title-texts"> GDP Prediction
+                    <i id="gdp-arrow" class="down-arrow"> </i>
+                </p>
+                <div id="gdp-box" class="endpoint-box">
+                    <p> Showing GDP Prediction </p>
+                </div>
+            </div>
+            <div id="labour-window" class="endpoint-windows">
+                <p onclick="toggleLabourWindow()" id="labour-title-text" class="title-texts"> Labour Force Prediction
+                    <i id="labour-arrow" class="down-arrow"> </i>
+                </p>
+                <div id="labour-box" class="endpoint-box">
+                    <p> Showing Labour Force Prediction </p>
+                </div>
+            </div>
+            <div id="co2-window" class="endpoint-windows">
+                <p onclick="toggleCO2Window()" id="co2-title-text" class="title-texts"> CO2 Emissions Prediction
+                    <i id="co2-arrow" class="down-arrow"> </i>
+                </p>
+                <div id="co2-box" class="endpoint-box">
+                    <p class="endpoint-url"> Endpoint: <a> /CO2_Emission </a> </p>
+                    <p class="endpoint-desc"> Obtain the predicted CO2 Emission of a country for a particular year. </p>
+                </div>
+            </div>
+            <div id="life-expectancy-window" class="endpoint-windows">
+                <p onclick="toggleLifeExpectancyWindow()" id="life-expectancy-title-text" class="title-texts"> Life Expectancy Prediction
+                    <i id="life-expectancy-arrow" class="down-arrow"> </i>
+                </p>
+                <div id="life-expectancy-box" class="endpoint-box">
+                    <p class="endpoint-url"> Endpoint: <a> /life_expectancy </a> </p>
+                    <p class="endpoint-desc"> Obtain the predicted life expectancy of a country for a particular year. </p>
+                </div>
+            </div>
+            <div id="fertility-window" class="endpoint-windows">
+                <p onclick="toggleFertilityWindow()" id="fertility-title-text" class="title-texts"> Fertility Rate Prediction
+                    <i id="fertility-arrow" class="down-arrow"> </i>
+                </p>
+                <div id="fertility-box" class="endpoint-box">
+                    <p class="endpoint-url"> Endpoint: <a> /fertility_rate </a> </p>
+                    <p class="endpoint-desc"> Obtain the predicted Fertility Rate of a country for a particular year. </p>
+                </div>
+            </div>
+        </div>
+        <!-- <div id="display"></div> -->
+    </body>
+    <!-- Script -->
+    <script>
+        let gdpVisible = false
+        let labourVisible = false
+        let co2Visible = false
+        let lifeExpectancyVisible = false
+        let fertilityVisible = false
+
+        async function login() {
+            let username = document.getElementById('username').value
+            let password = document.getElementById('password').value
+
+            let body = {
+                "username": username,
+                "password": password,
+            }
+
+            try {
+                let response = await fetch("http://127.0.0.1:5000/authentication", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                })
+
+                if (response.status == 400) {
+                    let indicator = document.getElementById('invalid-login')
+                    indicator.style.display = "block"
+                }
+                else if (response.status == 200) {
+
+                    let labourBox = document.getElementById('labour-box')
+                    let indicator = document.getElementById('invalid-login')
+                    let loginBox = document.getElementById('login-box')
+                    loginBox.style.display = "none"
+                    indicator.style.display = "none"
+
+                    let mainWindow = document.getElementById('main')
+                    main.style.display = "block"
+                }
+            }
+            catch (error) {
+                alert(error)
+            }
+        }
+
+        function toggleGdpWindow() {
+            let box = document.getElementById('gdp-box')
+            let arrow = document.getElementById('gdp-arrow')
+
+            if (!gdpVisible) {
+                arrow.className = "up-arrow"
+                box.style.display = "block"
+                gdpVisible = true
+            }
+            else {
+                arrow.className = "down-arrow"
+                box.style.display = "none"
+                gdpVisible = false
+            }
+        }
+
+        function toggleLabourWindow() {
+            let box = document.getElementById('labour-box')
+            let arrow = document.getElementById('labour-arrow')
+
+            if (!labourVisible) {
+                arrow.className = "up-arrow"
+                box.style.display = "block"
+                labourVisible = true
+            }
+            else {
+                arrow.className = "down-arrow"
+                box.style.display = "none"
+                labourVisible = false
+            }
+        }
+
+        function toggleCO2Window() {
+            let box = document.getElementById('co2-box')
+            let arrow = document.getElementById('co2-arrow')
+
+            // Added countries for life expectancy here directly
+            // Not sure where to put it, ideally it should exist somewhere else tho
+            let countries = ['Aruba', 'Afghanistan', 'Angola', 'Albania', 'Arab World',
+            'United Arab Emirates', 'Argentina', 'Armenia', 'Antigua and Barbuda',
+            'Australia' ,'Austria' ,'Azerbaijan', 'Burundi', 'Belgium', 'Benin',
+            'Burkina Faso', 'Bangladesh', 'Bulgaria', 'Bahrain', 'Bahamas, The',
+            'Bosnia and Herzegovina', 'Belarus' ,'Belize', 'Bolivia', 'Brazil', 'Barbados',
+            'Brunei Darussalam' ,'Bhutan' ,'Botswana', 'Central African Republic' ,
+            'Canada', 'Central Europe and the Baltics' ,'Switzerland', 'Channel Islands',
+            'Chile', 'China', "Cote d'Ivoire" ,'Cameroon', 'Congo, Dem. Rep.',
+            'Congo, Rep.', 'Colombia' ,'Comoros', 'Cabo Verde', 'Costa Rica',
+            'Caribbean small states', 'Cuba', 'Cyprus' ,'Czech Republic' ,'Germany'   ,
+            'Djibouti', 'Denmark', 'Dominican Republic', 'Algeria',
+            'East Asia & Pacific (excluding high income)',
+            'Early-demographic dividend', 'East Asia & Pacific',
+            'Europe & Central Asia (excluding high income)', 'Europe & Central Asia',
+            'Ecuador', 'Egypt, Arab Rep.', 'Euro area', 'Eritrea', 'Spain' ,'Estonia',
+            'Ethiopia', 'European Union', 'Fragile and conflict affected situations',
+            'Finland','Fiji', 'France', 'Micronesia, Fed. Sts.' ,'Gabon',
+            'United Kingdom' ,'Georgia', 'Ghana', 'Guinea' ,'Gambia, The', 'Guinea-Bissau',
+            'Equatorial Guinea', 'Greece' ,'Grenada', 'Greenland' ,'Guatemala', 'Guam',
+            'Guyana', 'High income' ,'Hong Kong SAR, China' ,'Honduras',
+            'Heavily indebted poor countries (HIPC)', 'Croatia', 'Haiti', 'Hungary',
+            'IBRD only', 'IDA & IBRD total', 'IDA total', 'IDA blend' ,'Indonesia',
+            'IDA only', 'India', 'Ireland', 'Iran, Islamic Rep.', 'Iraq', 'Iceland',
+            'Israel', 'Italy' ,'Jamaica' ,'Jordan', 'Japan', 'Kazakhstan', 'Kenya',
+            'Kyrgyz Republic', 'Cambodia', 'Kiribati', 'Korea, Rep.', 'Kuwait',
+            'Latin America & Caribbean (excluding high income)', 'Lao PDR', 'Lebanon',
+            'Liberia', 'Libya' ,'St. Lucia' ,'Latin America & Caribbean',
+            'Least developed countries: UN classification' ,'Low income','Sri Lanka',
+            'Lower middle income' ,'Low & middle income' ,'Lesotho',
+            'Late-demographic dividend', 'Lithuania', 'Luxembourg', 'Latvia',
+            'Macao SAR, China', 'Morocco', 'Moldova' ,'Madagascar', 'Maldives',
+            'Middle East & North Africa' ,'Mexico', 'Middle income', 'North Macedonia',
+            'Mali', 'Malta', 'Myanmar',
+            'Middle East & North Africa (excluding high income)', 'Montenegro',
+            'Mongolia' ,'Mozambique', 'Mauritania', 'Mauritius', 'Malawi' ,'Malaysia',
+            'North America', 'Namibia', 'New Caledonia', 'Niger' ,'Nigeria', 'Nicaragua',
+            'Netherlands' ,'Norway', 'Nepal', 'New Zealand', 'OECD members', 'Oman',
+            'Other small states' ,'Pakistan', 'Panama', 'Peru', 'Philippines',
+            'Papua New Guinea', ,'Poland', 'Pre-demographic dividend', 'Puerto Rico',
+            'Korea, Dem. People’s Rep.', 'Portugal' ,'Paraguay',
+            'Pacific island small states', 'Post-demographic dividend',
+            'French Polynesia', 'Qatar' ,'Romania', 'Russian Federation' ,'Rwanda',
+            'South Asia', 'Saudi Arabia' ,'Sudan', 'Senegal', 'Singapore',
+            'Solomon Islands' ,'Sierra Leone' ,'El Salvador','Somalia',
+            'Sub-Saharan Africa (excluding high income)', 'South Sudan',
+            'Sub-Saharan Africa', 'Small states', 'Sao Tome and Principe' ,'Suriname',
+            'Slovak Republic', 'Slovenia', 'Sweden', 'Eswatini', 'Seychelles',
+            'Syrian Arab Republic', 'Chad',
+            'East Asia & Pacific (IDA & IBRD countries)',
+            'Europe & Central Asia (IDA & IBRD countries)', 'Togo', 'Thailand',
+            'Tajikistan', 'Turkmenistan',
+            'Latin America & the Caribbean (IDA & IBRD countries)','Timor-Leste',
+            'Middle East & North Africa (IDA & IBRD countries)' ,'Tonga',
+            'South Asia (IDA & IBRD)' ,'Sub-Saharan Africa (IDA & IBRD countries)',
+            'Trinidad and Tobago', 'Tunisia', 'Turkey' ,'Tanzania', 'Uganda', 'Ukraine',
+            'Upper middle income', 'Uruguay' ,'United States', 'Uzbekistan',
+            'St. Vincent and the Grenadines' ,'Venezuela, RB', 'Virgin Islands (U.S.)',
+            'Vietnam', 'Vanuatu' ,'World', 'Samoa', 'Yemen, Rep.', 'South Africa', 'Zambia',
+            'Zimbabwe']
+            let years = [2019,2020,2021,2022,2023,2024,2025]
+
+            if (!co2Visible) {
+                arrow.className = "up-arrow"
+                box.style.display = "block"
+                co2Visible = true
+
+                // Creation of dropdowns and button to fetch data
+                let selectCountry = document.createElement('select')
+                selectCountry.id = 'co2-emission-select-country'
+                selectCountry.className = 'select-country'
+
+                let selectYear = document.createElement('select')
+                selectYear.id = 'co2-emission-select-year'
+                selectYear.className= 'select-year'
+
+                for (let i=0; i<countries.length; i++){
+                    let option = document.createElement('option')
+                    option.value = countries[i]
+                    option.innerText = countries[i]
+                    selectCountry.append(option)
+                }
+
+                for (let i=0; i<years.length; i++) {
+                    let option = document.createElement('option')
+                    option.value = years[i]
+                    option.innerText = years[i]
+                    selectYear.append(option)
+                }
+
+                let btn = document.createElement('button')
+                btn.id = 'co2-emission-button'
+                btn.className = 'button'
+                btn.innerText = "Get Data"
+                btn.addEventListener("click", getCO2Predicted)
+
+                box.appendChild(selectCountry)
+                box.appendChild(selectYear)
+                box.appendChild(btn)
+            }
+            else {
+                arrow.className = "down-arrow"
+                box.style.display = "none"
+                co2Visible = false
+
+                // Remove the output and
+                CO2EmissionTitle = document.getElementById('co2-emission-title')
+                CO2EmissionVal = document.getElementById('co2-emission-value')
+                CO2EmissionSelectCountry = document.getElementById('co2-emission-select-country')
+                CO2EmissionSelectYear = document.getElementById('co2-emission-select-year')
+                btn = document.getElementById('co2-emission-button')
+                image = document.getElementById('co2-emission-image')
+
+                box.removeChild(CO2EmissionSelectCountry)
+                box.removeChild(CO2EmissionSelectYear)
+                box.removeChild(btn)
+
+                if (CO2EmissionTitle && CO2EmissionVal && image) {
+                    box.removeChild(CO2EmissionTitle)
+                    box.removeChild(CO2EmissionVal)
+                    box.removeChild(image)
+                }
+            }
+        }
+
+        function toggleLifeExpectancyWindow() {
+            let box = document.getElementById('life-expectancy-box')
+            let arrow = document.getElementById('life-expectancy-arrow')
+
+
+            // Added countries for life expectancy here directly
+            // Not sure where to put it, ideally it should exist somewhere else tho
+            let countries = ['Aruba', 'Afghanistan', 'Angola', 'Albania', 'Arab World',
+            'United Arab Emirates', 'Argentina', 'Armenia', 'Antigua and Barbuda',
+            'Australia' ,'Austria' ,'Azerbaijan', 'Burundi', 'Belgium', 'Benin',
+            'Burkina Faso', 'Bangladesh', 'Bulgaria', 'Bahrain', 'Bahamas, The',
+            'Bosnia and Herzegovina', 'Belarus' ,'Belize', 'Bolivia', 'Brazil', 'Barbados',
+            'Brunei Darussalam' ,'Bhutan' ,'Botswana', 'Central African Republic' ,
+            'Canada', 'Central Europe and the Baltics' ,'Switzerland', 'Channel Islands',
+            'Chile', 'China', "Cote d'Ivoire" ,'Cameroon', 'Congo, Dem. Rep.',
+            'Congo, Rep.', 'Colombia' ,'Comoros', 'Cabo Verde', 'Costa Rica',
+            'Caribbean small states', 'Cuba', 'Cyprus' ,'Czech Republic' ,'Germany'   ,
+            'Djibouti', 'Denmark', 'Dominican Republic', 'Algeria',
+            'East Asia & Pacific (excluding high income)',
+            'Early-demographic dividend', 'East Asia & Pacific',
+            'Europe & Central Asia (excluding high income)', 'Europe & Central Asia',
+            'Ecuador', 'Egypt, Arab Rep.', 'Euro area', 'Eritrea', 'Spain' ,'Estonia',
+            'Ethiopia', 'European Union', 'Fragile and conflict affected situations',
+            'Finland','Fiji', 'France', 'Micronesia, Fed. Sts.' ,'Gabon',
+            'United Kingdom' ,'Georgia', 'Ghana', 'Guinea' ,'Gambia, The', 'Guinea-Bissau',
+            'Equatorial Guinea', 'Greece' ,'Grenada', 'Greenland' ,'Guatemala', 'Guam',
+            'Guyana', 'High income' ,'Hong Kong SAR, China' ,'Honduras',
+            'Heavily indebted poor countries (HIPC)', 'Croatia', 'Haiti', 'Hungary',
+            'IBRD only', 'IDA & IBRD total', 'IDA total', 'IDA blend' ,'Indonesia',
+            'IDA only', 'India', 'Ireland', 'Iran, Islamic Rep.', 'Iraq', 'Iceland',
+            'Israel', 'Italy' ,'Jamaica' ,'Jordan', 'Japan', 'Kazakhstan', 'Kenya',
+            'Kyrgyz Republic', 'Cambodia', 'Kiribati', 'Korea, Rep.', 'Kuwait',
+            'Latin America & Caribbean (excluding high income)', 'Lao PDR', 'Lebanon',
+            'Liberia', 'Libya' ,'St. Lucia' ,'Latin America & Caribbean',
+            'Least developed countries: UN classification' ,'Low income','Sri Lanka',
+            'Lower middle income' ,'Low & middle income' ,'Lesotho',
+            'Late-demographic dividend', 'Lithuania', 'Luxembourg', 'Latvia',
+            'Macao SAR, China', 'Morocco', 'Moldova' ,'Madagascar', 'Maldives',
+            'Middle East & North Africa' ,'Mexico', 'Middle income', 'North Macedonia',
+            'Mali', 'Malta', 'Myanmar',
+            'Middle East & North Africa (excluding high income)', 'Montenegro',
+            'Mongolia' ,'Mozambique', 'Mauritania', 'Mauritius', 'Malawi' ,'Malaysia',
+            'North America', 'Namibia', 'New Caledonia', 'Niger' ,'Nigeria', 'Nicaragua',
+            'Netherlands' ,'Norway', 'Nepal', 'New Zealand', 'OECD members', 'Oman',
+            'Other small states' ,'Pakistan', 'Panama', 'Peru', 'Philippines',
+            'Papua New Guinea', ,'Poland', 'Pre-demographic dividend', 'Puerto Rico',
+            'Korea, Dem. People’s Rep.', 'Portugal' ,'Paraguay',
+            'Pacific island small states', 'Post-demographic dividend',
+            'French Polynesia', 'Qatar' ,'Romania', 'Russian Federation' ,'Rwanda',
+            'South Asia', 'Saudi Arabia' ,'Sudan', 'Senegal', 'Singapore',
+            'Solomon Islands' ,'Sierra Leone' ,'El Salvador','Somalia',
+            'Sub-Saharan Africa (excluding high income)', 'South Sudan',
+            'Sub-Saharan Africa', 'Small states', 'Sao Tome and Principe' ,'Suriname',
+            'Slovak Republic', 'Slovenia', 'Sweden', 'Eswatini', 'Seychelles',
+            'Syrian Arab Republic', 'Chad',
+            'East Asia & Pacific (IDA & IBRD countries)',
+            'Europe & Central Asia (IDA & IBRD countries)', 'Togo', 'Thailand',
+            'Tajikistan', 'Turkmenistan',
+            'Latin America & the Caribbean (IDA & IBRD countries)','Timor-Leste',
+            'Middle East & North Africa (IDA & IBRD countries)' ,'Tonga',
+            'South Asia (IDA & IBRD)' ,'Sub-Saharan Africa (IDA & IBRD countries)',
+            'Trinidad and Tobago', 'Tunisia', 'Turkey' ,'Tanzania', 'Uganda', 'Ukraine',
+            'Upper middle income', 'Uruguay' ,'United States', 'Uzbekistan',
+            'St. Vincent and the Grenadines' ,'Venezuela, RB', 'Virgin Islands (U.S.)',
+            'Vietnam', 'Vanuatu' ,'World', 'Samoa', 'Yemen, Rep.', 'South Africa', 'Zambia',
+            'Zimbabwe']
+            let years = [2019,2020,2021,2022,2023,2024,2025]
+
+            if (!lifeExpectancyVisible) {
+                arrow.className = "up-arrow"
+                box.style.display = "block"
+                lifeExpectancyVisible = true
+
+                // Creation of dropdowns and button to fetch data
+                let selectCountry = document.createElement('select')
+                selectCountry.id = 'life-expec-select-country'
+                selectCountry.className = 'select-country'
+
+                let selectYear = document.createElement('select')
+                selectYear.id = 'life-expec-select-year'
+                selectYear.className= 'select-year'
+
+                for (let i=0; i<countries.length; i++){
+                    let option = document.createElement('option')
+                    option.value = countries[i]
+                    option.innerText = countries[i]
+                    selectCountry.append(option)
+                }
+
+                for (let i=0; i<years.length; i++) {
+                    let option = document.createElement('option')
+                    option.value = years[i]
+                    option.innerText = years[i]
+                    selectYear.append(option)
+                }
+
+                let btn = document.createElement('button')
+                btn.id = 'life-expec-button'
+                btn.className = 'button'
+                btn.innerText = "Get Data"
+                btn.addEventListener("click", getLifeExpectancyPred)
+
+                box.appendChild(selectCountry)
+                box.appendChild(selectYear)
+                box.appendChild(btn)
+            }
+
+            else {
+                arrow.className = "down-arrow"
+                box.style.display = "none"
+                lifeExpectancyVisible = false
+
+                // Remove the output and
+                lifeExpecTitle = document.getElementById('life-expec-title')
+                lifeExpecVal = document.getElementById('life-expec-value')
+                lifeExpecSelectCountry = document.getElementById('life-expec-select-country')
+                lifeExpecSelectYear = document.getElementById('life-expec-select-year')
+                btn = document.getElementById('life-expec-button')
+                image = document.getElementById('life-expec-image')
+
+                box.removeChild(lifeExpecSelectCountry)
+                box.removeChild(lifeExpecSelectYear)
+                box.removeChild(btn)
+
+                if (lifeExpecTitle && lifeExpecVal && image) {
+                    box.removeChild(lifeExpecTitle)
+                    box.removeChild(lifeExpecVal)
+                    box.removeChild(image)
+                }
+            }
+        }
+
+        function toggleFertilityWindow() {
+            let box = document.getElementById('fertility-box')
+            let arrow = document.getElementById('fertility-arrow')
+
+            // Added countries for life expectancy here directly
+            // Not sure where to put it, ideally it should exist somewhere else tho
+            let countries = ['Aruba', 'Afghanistan', 'Angola', 'Albania', 'Arab World',
+            'United Arab Emirates', 'Argentina', 'Armenia', 'Antigua and Barbuda',
+            'Australia' ,'Austria' ,'Azerbaijan', 'Burundi', 'Belgium', 'Benin',
+            'Burkina Faso', 'Bangladesh', 'Bulgaria', 'Bahrain', 'Bahamas, The',
+            'Bosnia and Herzegovina', 'Belarus' ,'Belize', 'Bolivia', 'Brazil', 'Barbados',
+            'Brunei Darussalam' ,'Bhutan' ,'Botswana', 'Central African Republic' ,
+            'Canada', 'Central Europe and the Baltics' ,'Switzerland', 'Channel Islands',
+            'Chile', 'China', 'Cote d'Ivoire' ,'Cameroon', 'Congo, Dem. Rep.',
+            'Congo, Rep.', 'Colombia' ,'Comoros', 'Cabo Verde', 'Costa Rica',
+            'Caribbean small states', 'Cuba', 'Cyprus' ,'Czech Republic' ,'Germany'   ,
+            'Djibouti', 'Denmark', 'Dominican Republic', 'Algeria',
+            'East Asia & Pacific (excluding high income)',
+            'Early-demographic dividend', 'East Asia & Pacific',
+            'Europe & Central Asia (excluding high income)', 'Europe & Central Asia',
+            'Ecuador', 'Egypt, Arab Rep.', 'Euro area', 'Eritrea', 'Spain' ,'Estonia',
+            'Ethiopia', 'European Union', 'Fragile and conflict affected situations',
+            'Finland','Fiji', 'France', 'Micronesia, Fed. Sts.' ,'Gabon',
+            'United Kingdom' ,'Georgia', 'Ghana', 'Guinea' ,'Gambia, The', 'Guinea-Bissau',
+            'Equatorial Guinea', 'Greece' ,'Grenada', 'Greenland' ,'Guatemala', 'Guam',
+            'Guyana', 'High income' ,'Hong Kong SAR, China' ,'Honduras',
+            'Heavily indebted poor countries (HIPC)', 'Croatia', 'Haiti', 'Hungary',
+            'IBRD only', 'IDA & IBRD total', 'IDA total', 'IDA blend' ,'Indonesia',
+            'IDA only', 'India', 'Ireland', 'Iran, Islamic Rep.', 'Iraq', 'Iceland',
+            'Israel', 'Italy' ,'Jamaica' ,'Jordan', 'Japan', 'Kazakhstan', 'Kenya',
+            'Kyrgyz Republic', 'Cambodia', 'Kiribati', 'Korea, Rep.', 'Kuwait',
+            'Latin America & Caribbean (excluding high income)', 'Lao PDR', 'Lebanon',
+            'Liberia', 'Libya' ,'St. Lucia' ,'Latin America & Caribbean',
+            'Least developed countries: UN classification' ,'Low income','Sri Lanka',
+            'Lower middle income' ,'Low & middle income' ,'Lesotho',
+            'Late-demographic dividend', 'Lithuania', 'Luxembourg', 'Latvia',
+            'Macao SAR, China', 'Morocco', 'Moldova' ,'Madagascar', 'Maldives',
+            'Middle East & North Africa' ,'Mexico', 'Middle income', 'North Macedonia',
+            'Mali', 'Malta', 'Myanmar',
+            'Middle East & North Africa (excluding high income)', 'Montenegro',
+            'Mongolia' ,'Mozambique', 'Mauritania', 'Mauritius', 'Malawi' ,'Malaysia',
+            'North America', 'Namibia', 'New Caledonia', 'Niger' ,'Nigeria', 'Nicaragua',
+            'Netherlands' ,'Norway', 'Nepal', 'New Zealand', 'OECD members', 'Oman',
+            'Other small states' ,'Pakistan', 'Panama', 'Peru', 'Philippines',
+            'Papua New Guinea', ,'Poland', 'Pre-demographic dividend', 'Puerto Rico',
+            'Korea, Dem. People’s Rep.', 'Portugal' ,'Paraguay',
+            'Pacific island small states', 'Post-demographic dividend',
+            'French Polynesia', 'Qatar' ,'Romania', 'Russian Federation' ,'Rwanda',
+            'South Asia', 'Saudi Arabia' ,'Sudan', 'Senegal', 'Singapore',
+            'Solomon Islands' ,'Sierra Leone' ,'El Salvador','Somalia',
+            'Sub-Saharan Africa (excluding high income)', 'South Sudan',
+            'Sub-Saharan Africa', 'Small states', 'Sao Tome and Principe' ,'Suriname',
+            'Slovak Republic', 'Slovenia', 'Sweden', 'Eswatini', 'Seychelles',
+            'Syrian Arab Republic', 'Chad',
+            'East Asia & Pacific (IDA & IBRD countries)',
+            'Europe & Central Asia (IDA & IBRD countries)', 'Togo', 'Thailand',
+            'Tajikistan', 'Turkmenistan',
+            'Latin America & the Caribbean (IDA & IBRD countries)','Timor-Leste',
+            'Middle East & North Africa (IDA & IBRD countries)' ,'Tonga',
+            'South Asia (IDA & IBRD)' ,'Sub-Saharan Africa (IDA & IBRD countries)',
+            'Trinidad and Tobago', 'Tunisia', 'Turkey' ,'Tanzania', 'Uganda', 'Ukraine',
+            'Upper middle income', 'Uruguay' ,'United States', 'Uzbekistan',
+            'St. Vincent and the Grenadines' ,'Venezuela, RB', 'Virgin Islands (U.S.)',
+            'Vietnam', 'Vanuatu' ,'World', 'Samoa', 'Yemen, Rep.', 'South Africa', 'Zambia',
+            'Zimbabwe']
+            let years = [2019,2020,2021,2022,2023,2024,2025]
+            
+            if (!fertilityVisible) {
+                arrow.className = "up-arrow"
+                box.style.display = "block"
+                fertilityVisible = true
+                
+                // Creation of dropdowns and button to fetch data
+                let selectCountry = document.createElement('select')
+                selectCountry.id = 'fertility-rate-select-country'
+                selectCountry.className = 'select-country'
+
+                let selectYear = document.createElement('select')
+                selectYear.id = 'fertility-rate-select-year'
+                selectYear.className= 'select-year'
+
+                for (let i=0; i<countries.length; i++){
+                    let option = document.createElement('option')
+                    option.value = countries[i]
+                    option.innerText = countries[i]
+                    selectCountry.append(option)
+                }
+
+                for (let i=0; i<years.length; i++) {
+                    let option = document.createElement('option')
+                    option.value = years[i]
+                    option.innerText = years[i]
+                    selectYear.append(option)
+                }
+
+                let btn = document.createElement('button')
+                btn.id = 'fertility-rate-button'
+                btn.className = 'button'
+                btn.innerText = "Get Data"
+                btn.addEventListener("click", getFertilityPredicted)
+
+                box.appendChild(selectCountry)
+                box.appendChild(selectYear)
+                box.appendChild(btn)
+            }
+            else {
+                arrow.className = "down-arrow"
+                box.style.display = "none"
+                fertilityVisible = false
+                
+                // Remove the output and
+                FertilityRateTitle = document.getElementById('fertility-rate-title')
+                FertilityRateVal = document.getElementById('fertility-rate-value')
+                FertilityRateSelectCountry = document.getElementById('fertility-rate-select-country')
+                FertilityRateSelectYear = document.getElementById('fertility-rate-select-year')
+                btn = document.getElementById('fertility-rate-button')
+                image = document.getElementById('fertility-rate-image')
+
+                box.removeChild(FertilityRateSelectCountry)
+                box.removeChild(FertilityRateSelectYear)
+                box.removeChild(btn)
+
+                if (FertilityRateTitle && FertilityRateVal && image) {
+                    box.removeChild(FertilityRateTitle)
+                    box.removeChild(FertilityRateVal)
+                    box.removeChild(image)
+                }
+            }
+        }
+
+        async function getLifeExpectancyPred() {
+            let box = document.getElementById('life-expectancy-box')
+            let selectCountry = document.getElementById('life-expec-select-country')
+            let selectYear = document.getElementById('life-expec-select-year')
+
+            let countryVal = selectCountry.value
+            let yearVal = selectYear.value
+            let body = {
+                country_name: countryVal,
+                year: parseInt(yearVal)
+            }
+
+            try {
+                let response = await fetch("http://127.0.0.1:5000/life_expectancy", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                })
+
+                let data = await response.json()
+
+                if (response.status == 200) {
+                    console.log(data)
+
+                    let existingChart = document.getElementById('life-expec-image')
+                    let existingTitle = document.getElementById('life-expec-title')
+                    let existingVal = document.getElementById('life-expec-value')
+
+                    if (!existingChart) {
+                        // Append output to box
+                        let predictedTitle = document.createElement('p')
+                        let predictedTitleText = document.createTextNode("Predicted Value: ")
+                        predictedTitle.id = 'life-expec-title'
+                        predictedTitle.className = 'predicted-value-title'
+                        predictedTitle.appendChild(predictedTitleText)
+
+                        let predictedVal = document.createElement('p')
+                        let predictedValText = document.createTextNode(data['predicted_value'])
+                        predictedVal.id = 'life-expec-value'
+                        predictedVal.className = 'predicted-value'
+                        predictedVal.appendChild(predictedValText)
+
+                        let image = document.createElement('img')
+                        image.id = 'life-expec-image'
+                        image.className = 'prediction-image'
+                        image.src = data['image']
+                        box.appendChild(predictedTitle)
+                        box.appendChild(predictedVal)
+                        box.appendChild(image)
+                    }
+
+                    else {
+                        // Remove existing output
+                        box.removeChild(existingChart)
+                        box.removeChild(existingTitle)
+                        box.removeChild(existingVal)
+
+                        // Append output to box
+                        let predictedTitle = document.createElement('p')
+                        let predictedTitleText = document.createTextNode("Predicted Value: ")
+                        predictedTitle.id = 'life-expec-title'
+                        predictedTitle.className = 'predicted-value-title'
+                        predictedTitle.appendChild(predictedTitleText)
+
+                        let predictedVal = document.createElement('p')
+                        let predictedValText = document.createTextNode(data['predicted_value'])
+                        predictedVal.id = 'life-expec-value'
+                        predictedVal.className = 'predicted-value'
+                        predictedVal.appendChild(predictedValText)
+
+                        let image = document.createElement('img')
+                        image.id = 'life-expec-image'
+                        image.className = 'prediction-image'
+                        image.src = data['image']
+                        box.appendChild(predictedTitle)
+                        box.appendChild(predictedVal)
+                        box.appendChild(image)
+                    }
+                }
+            }
+            catch (error) {
+                alert(error)
+            }
+        }
+
+        async function getCO2Predicted() {
+            let box = document.getElementById('co2-box')
+            let selectCountry = document.getElementById('co2-emission-select-country')
+            let selectYear = document.getElementById('co2-emission-select-year')
+
+            let countryVal = selectCountry.value
+            let yearVal = selectYear.value
+            let body = {
+                country_name: countryVal,
+                year: parseInt(yearVal)
+            }
+
+            console.log(countryVal)
+            console.log(yearVal)
+
+            try {
+                let response = await fetch("http://127.0.0.1:5000/co2_emission", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json'},
+                    body: JSON.stringify(body)
+                })
+
+                let data = await response.json()
+
+                if (response.status == 200) {
+                    console.log(data)
+
+                    let existingChart = document.getElementById('co2-emission-image')
+                    let existingTitle = document.getElementById('co2-emission-title')
+                    let existingVal = document.getElementById('co2-emission-value')
+
+                    if (!existingChart) {
+                        // Append output to box
+                        let predictedTitle = document.createElement('p')
+                        let predictedTitleText = document.createTextNode("Predicted Value: ")
+                        predictedTitle.id = 'co2-emission-title'
+                        predictedTitle.className = 'predicted-value-title'
+                        predictedTitle.appendChild(predictedTitleText)
+
+                        let predictedVal = document.createElement('p')
+                        let predictedValText = document.createTextNode(data['predicted_value'])
+                        predictedVal.id = 'co2-emission-value'
+                        predictedVal.className = 'predicted-value'
+                        predictedVal.appendChild(predictedValText)
+
+                        let image = document.createElement('img')
+                        image.id = 'co2-emission-image'
+                        image.className = 'prediction-image'
+                        image.src = data['image']
+                        box.appendChild(predictedTitle)
+                        box.appendChild(predictedVal)
+                        box.appendChild(image)
+                    }
+
+                    else {
+                        // Remove existing output
+                        box.removeChild(existingChart)
+                        box.removeChild(existingTitle)
+                        box.removeChild(existingVal)
+
+                        // Append output to box
+                        let predictedTitle = document.createElement('p')
+                        let predictedTitleText = document.createTextNode("Predicted Value: ")
+                        predictedTitle.id = 'co2-emission-title'
+                        predictedTitle.className = 'predicted-value-title'
+                        predictedTitle.appendChild(predictedTitleText)
+
+                        let predictedVal = document.createElement('p')
+                        let predictedValText = document.createTextNode(data['predicted_value'])
+                        predictedVal.id = 'co2-emission-value'
+                        predictedVal.className = 'predicted-value'
+                        predictedVal.appendChild(predictedValText)
+
+                        let image = document.createElement('img')
+                        image.id = 'co2-emission-image'
+                        image.className = 'prediction-image'
+                        image.src = data['image']
+                        box.appendChild(predictedTitle)
+                        box.appendChild(predictedVal)
+                        box.appendChild(image)
+                    }
+                }
+            }
+            catch (error) {
+                alert(error)
+            }
+        }
+        
+        async function getFertilityPredicted() {
+            let box = document.getElementById('fertility-box')
+            let selectCountry = document.getElementById('fertility-rate-select-country')
+            let selectYear = document.getElementById('fertility-rate-select-year')
+
+            let countryVal = selectCountry.value
+            let yearVal = selectYear.value
+            let body = {
+                country_name: countryVal,
+                year: parseInt(yearVal)
+            }
+
+            console.log(countryVal)
+            console.log(yearVal)
+
+            try {
+                let response = await fetch("http://127.0.0.1:5000/fertility_rate", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json'},
+                    body: JSON.stringify(body)
+                })
+
+                let data = await response.json()
+
+                if (response.status == 200) {
+                    console.log(data)
+
+                    let existingChart = document.getElementById('fertility-rate-image')
+                    let existingTitle = document.getElementById('fertility-rate-title')
+                    let existingVal = document.getElementById('fertility-rate-value')
+
+                    if (!existingChart) {
+                        // Append output to box
+                        let predictedTitle = document.createElement('p')
+                        let predictedTitleText = document.createTextNode("Predicted Value: ")
+                        predictedTitle.id = 'fertility-rate-title'
+                        predictedTitle.className = 'predicted-value-title'
+                        predictedTitle.appendChild(predictedTitleText)
+
+                        let predictedVal = document.createElement('p')
+                        let predictedValText = document.createTextNode(data['predicted_value'])
+                        predictedVal.id = 'fertility-rate-value'
+                        predictedVal.className = 'predicted-value'
+                        predictedVal.appendChild(predictedValText)
+
+                        let image = document.createElement('img')
+                        image.id = 'fertility-rate-image'
+                        image.className = 'prediction-image'
+                        image.src = data['image']
+                        box.appendChild(predictedTitle)
+                        box.appendChild(predictedVal)
+                        box.appendChild(image)
+                    }
+
+                    else {
+                        // Remove existing output
+                        box.removeChild(existingChart)
+                        box.removeChild(existingTitle)
+                        box.removeChild(existingVal)
+
+                        // Append output to box
+                        let predictedTitle = document.createElement('p')
+                        let predictedTitleText = document.createTextNode("Predicted Value: ")
+                        predictedTitle.id = 'fertility-rate-title'
+                        predictedTitle.className = 'predicted-value-title'
+                        predictedTitle.appendChild(predictedTitleText)
+
+                        let predictedVal = document.createElement('p')
+                        let predictedValText = document.createTextNode(data['predicted_value'])
+                        predictedVal.id = 'fertility-rate-value'
+                        predictedVal.className = 'predicted-value'
+                        predictedVal.appendChild(predictedValText)
+
+                        let image = document.createElement('img')
+                        image.id = 'fertility-rate-image'
+                        image.className = 'prediction-image'
+                        image.src = data['image']
+                        box.appendChild(predictedTitle)
+                        box.appendChild(predictedVal)
+                        box.appendChild(image)
+                    }
+                }
+            }
+            catch (error) {
+                alert(error)
+            }
+        }
+        // async function getNumber() {
+        //     let response = await fetch("http://127.0.0.1:5000/stuff")
+        //     let data = await response.json()
+
+        //     let num = parseInt(JSON.stringify(data))
+        //     console.log(num)
+        //     if (document.getElementById('this-is-a-text')) {
+        //         let displayNode = document.getElementById('this-is-a-text')
+        //         displayNode.textContent = num
+        //     }
+
+        //     else {
+        //         let displayNode = document.createElement('p')
+        //         displayNode.id = 'this-is-a-text'
+        //         let t = document.createTextNode(num)
+        //         displayNode.appendChild(t)
+        //         document.getElementById('display').appendChild(displayNode)
+        //     }
+        // }
+    </script>
+    <!-- End Script -->
+</html>
