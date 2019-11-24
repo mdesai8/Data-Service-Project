@@ -7,6 +7,7 @@ from flask import request
 from flask_restplus import fields
 from lifeexpec_predict import *
 from predictCO2 import *
+from gdp_predict import *
 import json
 import base64
 
@@ -83,6 +84,33 @@ class Life_Expectancy(Resource):
             encoded_image = encoded_image[:-1]
 
             return {"predicted_value": p_le, "image": "data:image/png;base64,"+encoded_image}, 200
+
+
+@api.route("/predict_gdp")
+class Predict_gdp(Resource):
+    @api.response(200, "Successful")
+    @api.response(404, "Country name does not exist")
+    @api.response(400, "Malformed Request")
+    @api.doc(description="Obtain the predicted GDP of a country for a particular year")
+    @api.expect(input_model, validate=True)
+    def post(self):
+        body = request.json
+
+        if 'year' not in body or 'country_name' not in body:
+            return {"message": "No year or country provided"}, 400
+
+        country = body['country_name']
+        year = body['year']
+        predicted_gdp = gdp_predicted(country, year)
+        predicted_gdp = str(predicted_gdp)
+        predicted_gdp = predicted_gdp+" US$"
+
+        with open("predicted_images/gdp.png", "rb") as imageFile:
+            encoded_image = str(base64.b64encode(imageFile.read()))[2:]
+            encoded_image = encoded_image[:-1]
+
+            return {"predicted_value": predicted_gdp, "image": "data:image/png;base64,"+encoded_image}, 200
+
 
 @api.route("/co2_emission")
 #@cross_origin()
