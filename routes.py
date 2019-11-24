@@ -86,7 +86,7 @@ class Life_Expectancy(Resource):
             return {"predicted_value": p_le, "image": "data:image/png;base64,"+encoded_image}, 200
 
 
-@api.route("/predict_gdp")
+@api.route("/gdp_endpoint")
 class Predict_gdp(Resource):
     @api.response(200, "Successful")
     @api.response(404, "Country name does not exist")
