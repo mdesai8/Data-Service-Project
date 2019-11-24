@@ -111,7 +111,30 @@ class Predict_gdp(Resource):
 
             return {"predicted_value": predicted_gdp, "image": "data:image/png;base64,"+encoded_image}, 200
 
+@api.route("/labour")
+class Labour(Resource):
+    @api.response(200, "Successful")
+    @api.response(404, "Country name does not exist")
+    @api.response(400, "Malformed Request")
+    @api.doc(description="Obtain the predicted labour force of a country for a particular year")
+    @api.expect(input_model, validate=True)
+    def post(self):
+        body = request.json
 
+        if 'year' not in body or 'country_name' not in body:
+            return {"message": "No year or country provided"}, 400
+
+        country = body['country_name']
+        year = body['year']
+        labourPred = predicted_labour(country, year)
+        labourPred=str(labourPred)
+
+        with open("predicted_images/labour.png", "rb") as imageFile:
+            encoded_image = str(base64.b64encode(imageFile.read()))[2:]
+            encoded_image = encoded_image[:-1]
+
+            return {"predicted_value": labourPred, "image": "data:image/png;base64,"+encoded_image}, 200
+        
 @api.route("/co2_emission")
 #@cross_origin()
 class CO2_Emission(Resource):
