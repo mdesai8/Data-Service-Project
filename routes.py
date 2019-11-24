@@ -6,6 +6,7 @@ from flask_cors import CORS, cross_origin
 from flask import request
 from flask_restplus import fields
 from lifeexpec_predict import *
+from labour_predict import *
 from predictCO2 import *
 from gdp_predict import *
 import json
