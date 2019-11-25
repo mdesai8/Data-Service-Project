@@ -1,0 +1,252 @@
+{
+    "swagger": "2.0",
+    "basePath": "/",
+    "paths": {
+        "/authentication": {
+            "post": {
+                "responses": {
+                    "400": {
+                        "description": "Invalid Credentials"
+                    },
+                    "200": {
+                        "description": "Authenticated"
+                    }
+                },
+                "description": "Authenticate User",
+                "operationId": "post_auth",
+                "tags": [
+                    "Country Feature Predictions"
+                ]
+            }
+        },
+        "/co2_emission": {
+            "post": {
+                "responses": {
+                    "400": {
+                        "description": "Malformed Request"
+                    },
+                    "404": {
+                        "description": "Country name does not exist"
+                    },
+                    "200": {
+                        "description": "Successful"
+                    }
+                },
+                "description": "Obtain the predicted CO2 Emission of a country for a particular year.\n                        Returns the predicted value and a graph showing the progression of CO2 Emissions over the years",
+                "operationId": "post_co2__emission",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/Country_and_Year"
+                        }
+                    }
+                ],
+                "tags": [
+                    "Country Feature Predictions"
+                ]
+            }
+        },
+        "/country_analysis": {
+            "post": {
+                "responses": {
+                    "400": {
+                        "description": "Malformed Request"
+                    },
+                    "404": {
+                        "description": "Feature does not exist"
+                    },
+                    "200": {
+                        "description": "Successful"
+                    }
+                },
+                "description": "Obtain a graph showing the correlation between two features (based on region)",
+                "operationId": "post_analysis",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/Features"
+                        }
+                    }
+                ],
+                "tags": [
+                    "Country Feature Predictions"
+                ]
+            }
+        },
+        "/fertility_rate": {
+            "post": {
+                "responses": {
+                    "400": {
+                        "description": "Malformed Request"
+                    },
+                    "404": {
+                        "description": "Country name does not exist"
+                    },
+                    "200": {
+                        "description": "Successful"
+                    }
+                },
+                "description": "Obtain the predicted Fertility rate of a country for a particular year.\n                        Returns the predicted value and a graph showing the progression of Fertility rate over the years",
+                "operationId": "post_fertility__rate",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/Country_and_Year"
+                        }
+                    }
+                ],
+                "tags": [
+                    "Country Feature Predictions"
+                ]
+            }
+        },
+        "/gdp": {
+            "post": {
+                "responses": {
+                    "400": {
+                        "description": "Malformed Request"
+                    },
+                    "404": {
+                        "description": "Country name does not exist"
+                    },
+                    "200": {
+                        "description": "Successful"
+                    }
+                },
+                "description": "Obtain the predicted GDP of a country for a particular year.\n                        Returns the predicted value and a graph showing the progression of GDP over the years",
+                "operationId": "post_predict_gdp",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/Country_and_Year"
+                        }
+                    }
+                ],
+                "tags": [
+                    "Country Feature Predictions"
+                ]
+            }
+        },
+        "/labour": {
+            "post": {
+                "responses": {
+                    "400": {
+                        "description": "Malformed Request"
+                    },
+                    "404": {
+                        "description": "Country name does not exist"
+                    },
+                    "200": {
+                        "description": "Successful"
+                    }
+                },
+                "description": "Obtain the predicted labour force of a country for a particular year.\n                        Returns the predicted value and a graph showing the progression of labour force over the years",
+                "operationId": "post_labour",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/Country_and_Year"
+                        }
+                    }
+                ],
+                "tags": [
+                    "Country Feature Predictions"
+                ]
+            }
+        },
+        "/life_expectancy": {
+            "post": {
+                "responses": {
+                    "400": {
+                        "description": "Malformed Request"
+                    },
+                    "404": {
+                        "description": "Country name does not exist"
+                    },
+                    "200": {
+                        "description": "Successful"
+                    }
+                },
+                "description": "Obtain the predicted life expectancy of a country for a particular year.\n                        Returns the predicted value and a graph showing the progression of life expectancy over the years",
+                "operationId": "post_life__expectancy",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/Country_and_Year"
+                        }
+                    }
+                ],
+                "tags": [
+                    "Country Feature Predictions"
+                ]
+            }
+        }
+    },
+    "info": {
+        "title": "Country Feature Predictions",
+        "version": "1.0",
+        "description": "This API provides a way to get various predictions for certain features about a country by year. You can also obtain the correlation of 2 features and see how it changes over time for different regions."
+    },
+    "produces": [
+        "application/json"
+    ],
+    "consumes": [
+        "application/json"
+    ],
+    "tags": [
+        {
+            "name": "Country Feature Predictions",
+            "description": "Default namespace"
+        }
+    ],
+    "definitions": {
+        "Country_and_Year": {
+            "properties": {
+                "country_name": {
+                    "type": "string"
+                },
+                "year": {
+                    "type": "integer"
+                }
+            },
+            "type": "object"
+        },
+        "Features": {
+            "properties": {
+                "x": {
+                    "type": "string"
+                },
+                "y": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        }
+    },
+    "responses": {
+        "ParseError": {
+            "description": "When a mask can't be parsed"
+        },
+        "MaskError": {
+            "description": "When any error occurs on mask"
+        }
+    }
+}
