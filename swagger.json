@@ -14,6 +14,16 @@
                 },
                 "description": "Authenticate User",
                 "operationId": "post_auth",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/Login"
+                        }
+                    }
+                ],
                 "tags": [
                     "Country Feature Predictions"
                 ]
@@ -218,6 +228,17 @@
         }
     ],
     "definitions": {
+        "Login": {
+            "properties": {
+                "username": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
         "Country_and_Year": {
             "properties": {
                 "country_name": {
