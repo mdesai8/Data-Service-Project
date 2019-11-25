@@ -22,7 +22,7 @@
                     <i id="gdp-arrow" class="down-arrow"> </i>
                 </p>
                 <div id="gdp-box" class="endpoint-box">
-                    <p class="endpoint-url"> Endpoint: <a> /GDP_endpoint </a> </p>
+                    <p class="endpoint-url"> Endpoint: <a> /gdp </a> </p>
                     <p class="endpoint-desc"> Obtain the predicted GDP of a country for a particular year. </p>
                 </div>
             </div>
@@ -1189,7 +1189,7 @@
             console.log(yearVal)
 
             try {
-                let response = await fetch("http://127.0.0.1:5000/gdp_endpoint", {
+                let response = await fetch("http://127.0.0.1:5000/gdp", {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json'},
                     body: JSON.stringify(body)
