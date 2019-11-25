@@ -10,7 +10,9 @@ from predictCO2 import *
 from gdp_predict import *
 from predictFertility import *
 from labour_predict import *
+from track_usage import *
 from animate_graph import *
+
 import json
 import base64
 
@@ -95,7 +97,12 @@ class Life_Expectancy(Resource):
             encoded_image = str(base64.b64encode(imageFile.read()))[2:]
             encoded_image = encoded_image[:-1]
 
-            return {"predicted_value": p_le, "image": "data:image/png;base64,"+encoded_image}, 200
+            incrementUsage('life_expectancy')
+            numCalls = getNumUsages('life_expectancy')
+
+            return {"predicted_value": p_le,
+                    "num_calls" : numCalls,
+                    "image": "data:image/png;base64,"+encoded_image}, 200
 
 
 @api.route("/gdp_endpoint")
@@ -103,7 +110,7 @@ class Predict_gdp(Resource):
     @api.response(200, "Successful")
     @api.response(404, "Country name does not exist")
     @api.response(400, "Malformed Request")
-    @api.doc(description="""Obtain the predicted GDP of a country for a particular year.    
+    @api.doc(description="""Obtain the predicted GDP of a country for a particular year.
                         Returns the predicted value and a graph showing the progression of GDP over the years""")
     @api.expect(input_model, validate=True)
     def post(self):
@@ -126,7 +133,12 @@ class Predict_gdp(Resource):
             encoded_image = str(base64.b64encode(imageFile.read()))[2:]
             encoded_image = encoded_image[:-1]
 
-            return {"predicted_value": predicted_gdp, "image": "data:image/png;base64,"+encoded_image}, 200
+            incrementUsage('gdp')
+            numCalls = getNumUsages('gdp')
+
+            return {"predicted_value": predicted_gdp,
+                    "num_calls" : numCalls,
+                    "image": "data:image/png;base64,"+encoded_image}, 200
 
 @api.route("/labour")
 class Labour(Resource):
@@ -155,8 +167,13 @@ class Labour(Resource):
             encoded_image = str(base64.b64encode(imageFile.read()))[2:]
             encoded_image = encoded_image[:-1]
 
-            return {"predicted_value": labourPred, "image": "data:image/png;base64,"+encoded_image}, 200
-        
+            incrementUsage('labour')
+            numCalls = getNumUsages('labour')
+
+            return {"predicted_value": labourPred,
+                    "num_calls" : numCalls,
+                    "image": "data:image/png;base64,"+encoded_image}, 200
+
 @api.route("/co2_emission")
 #@cross_origin()
 class CO2_Emission(Resource):
@@ -184,7 +201,11 @@ class CO2_Emission(Resource):
             encoded_image = str(base64.b64encode(imageFile.read()))[2:]
             encoded_image = encoded_image[:-1]
 
-            return {"predicted_value" : predictedEmission,
+            incrementUsage('co2')
+            numCalls = getNumUsages('co2')
+
+            return {"predicted_value": predictedEmission,
+                    "num_calls" : numCalls,
                     "image": "data:image/png;base64,"+encoded_image}, 200
 
 @api.route("/fertility_rate")
@@ -214,7 +235,11 @@ class Fertility_Rate(Resource):
             encoded_image = str(base64.b64encode(imageFile.read()))[2:]
             encoded_image = encoded_image[:-1]
 
-            return {"predicted_value" : predictedFertility,
+            incrementUsage('fertility_rate')
+            numCalls = getNumUsages('fertility_rate')
+
+            return {"predicted_value": predictedFertility,
+                    "num_calls" : numCalls,
                     "image": "data:image/png;base64,"+encoded_image}, 200
 
 
@@ -231,7 +256,7 @@ class Analysis(Resource):
         y_feature = body['y']
 
         valid_features = ['C02.csv', 'fertility_rate.csv', 'gdp.csv', 'labour.csv', 'life_expectancy.csv']
-        
+
         if x_feature not in valid_features or y_feature not in valid_features:
             return {"message": "Feature does not exist"}, 400
 

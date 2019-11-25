@@ -247,6 +247,8 @@
                 gdpVisible = false
 
 		// Remove the output and
+                GDPUsageTitle = document.getElementById('gdp-usage-title')
+                GDPUsageVal = document.getElementById('gdp-usage-val')
                 GDPTitle = document.getElementById('gdp-title')
                 GDPVal = document.getElementById('gdp-value')
                 GDPSelectCountry = document.getElementById('gdp-select-country')
@@ -258,7 +260,9 @@
                 box.removeChild(GDPSelectYear)
                 box.removeChild(btn)
 
-                if (GDPTitle && GDPVal && image) {
+                if (GDPTitle && GDPVal && image && GDPUsageVal && GDPUsageTitle) {
+                    box.removeChild(GDPUsageVal)
+                    box.removeChild(GDPUsageTitle)
                     box.removeChild(GDPTitle)
                     box.removeChild(GDPVal)
                     box.removeChild(image)
@@ -366,17 +370,23 @@
                 arrow.className = "down-arrow"
                 box.style.display = "none"
                 labourVisible = false
+
                 // Remove the output and
+                labourUsageTitle = document.getElementById('labour-usage-title')
+                labourUsageVal = document.getElementById('labour-usage-val')
                 labourTitle = document.getElementById('labour-title')
                 labourVal = document.getElementById('labour-value')
                 labourSelectCountry = document.getElementById('labour-select-country')
                 labourSelectYear = document.getElementById('labour-select-year')
                 btn = document.getElementById('labour-button')
                 image = document.getElementById('labour-image')
+
                 box.removeChild(labourSelectCountry)
                 box.removeChild(labourSelectYear)
                 box.removeChild(btn)
-                if (labourTitle && labourVal && image) {
+                if (labourTitle && labourVal && image && labourUsageVal && labourUsageTitle) {
+                    box.removeChild(labourUsageTitle)
+                    box.removeChild(labourUsageVal)
                     box.removeChild(labourTitle)
                     box.removeChild(labourVal)
                     box.removeChild(image)
@@ -495,6 +505,8 @@
                 co2Visible = false
 
                 // Remove the output and
+                co2EmissionUsageTitle = document.getElementById('co2-emission-usage-title')
+                co2EmissionUsageVal = document.getElementById('co2-emission-usage-val')
                 CO2EmissionTitle = document.getElementById('co2-emission-title')
                 CO2EmissionVal = document.getElementById('co2-emission-value')
                 CO2EmissionSelectCountry = document.getElementById('co2-emission-select-country')
@@ -506,7 +518,9 @@
                 box.removeChild(CO2EmissionSelectYear)
                 box.removeChild(btn)
 
-                if (CO2EmissionTitle && CO2EmissionVal && image) {
+                if (CO2EmissionTitle && CO2EmissionVal && image && co2EmissionUsageTitle && co2EmissionUsageVal) {
+                    box.removeChild(co2EmissionUsageTitle)
+                    box.removeChild(co2EmissionUsageVal)
                     box.removeChild(CO2EmissionTitle)
                     box.removeChild(CO2EmissionVal)
                     box.removeChild(image)
@@ -627,6 +641,8 @@
                 lifeExpectancyVisible = false
 
                 // Remove the output and
+                lifeExpecUsageTitle = document.getElementById('life-expec-usage-title')
+                lifeExpecUsageVal = document.getElementById('life-expec-usage-val')
                 lifeExpecTitle = document.getElementById('life-expec-title')
                 lifeExpecVal = document.getElementById('life-expec-value')
                 lifeExpecSelectCountry = document.getElementById('life-expec-select-country')
@@ -638,7 +654,9 @@
                 box.removeChild(lifeExpecSelectYear)
                 box.removeChild(btn)
 
-                if (lifeExpecTitle && lifeExpecVal && image) {
+                if (lifeExpecTitle && lifeExpecVal && image && lifeExpecUsageTitle && lifeExpecUsageVal) {
+                    box.removeChild(lifeExpecUsageTitle)
+                    box.removeChild(lifeExpecUsageVal)
                     box.removeChild(lifeExpecTitle)
                     box.removeChild(lifeExpecVal)
                     box.removeChild(image)
@@ -712,12 +730,12 @@
             'Vietnam', 'Vanuatu' ,'World', 'Samoa', 'Yemen, Rep.', 'South Africa', 'Zambia',
             'Zimbabwe']
             let years = [2019,2020,2021,2022,2023,2024,2025]
-            
+
             if (!fertilityVisible) {
                 arrow.className = "up-arrow"
                 box.style.display = "block"
                 fertilityVisible = true
-                
+
                 // Creation of dropdowns and button to fetch data
                 let selectCountry = document.createElement('select')
                 selectCountry.id = 'fertility-rate-select-country'
@@ -755,8 +773,10 @@
                 arrow.className = "down-arrow"
                 box.style.display = "none"
                 fertilityVisible = false
-                
+
                 // Remove the output and
+                FertilityRateUsageTitle = document.getElementById('fertility-rate-usage-title')
+                FertilityRateUsageVal = document.getElementById('fertility-rate-usage-val')
                 FertilityRateTitle = document.getElementById('fertility-rate-title')
                 FertilityRateVal = document.getElementById('fertility-rate-value')
                 FertilityRateSelectCountry = document.getElementById('fertility-rate-select-country')
@@ -769,6 +789,8 @@
                 box.removeChild(btn)
 
                 if (FertilityRateTitle && FertilityRateVal && image) {
+                    box.removeChild(FertilityRateUsageTitle)
+                    box.removeChild(FertilityRateUsageVal)
                     box.removeChild(FertilityRateTitle)
                     box.removeChild(FertilityRateVal)
                     box.removeChild(image)
@@ -823,14 +845,29 @@
                     let existingChart = document.getElementById('life-expec-image')
                     let existingTitle = document.getElementById('life-expec-title')
                     let existingVal = document.getElementById('life-expec-value')
+                    let existingUsageTitle = document.getElementById('life-expec-usage-title')
+                    let existingUsageVal = document.getElementById('life-expec-usage-val')
 
                     if (!existingChart) {
                         // Append output to box
+                        let numUsageTitle = document.createElement('p')
+                        let numUsageTitleText = document.createTextNode("Number of Calls: ")
+                        numUsageTitle.id ='life-expec-usage-title'
+                        numUsageTitle.className = 'num-usage-title'
+                        numUsageTitle.appendChild(numUsageTitleText)
+
+                        let numUsageVal = document.createElement('p')
+                        let numUsageValText = document.createTextNode(data['num_calls'])
+                        numUsageVal.id = 'life-expec-usage-val'
+                        numUsageVal.className = 'usage-value'
+                        numUsageVal.appendChild(numUsageValText)
+
                         let predictedTitle = document.createElement('p')
                         let predictedTitleText = document.createTextNode("Predicted Value: ")
                         predictedTitle.id = 'life-expec-title'
                         predictedTitle.className = 'predicted-value-title'
                         predictedTitle.appendChild(predictedTitleText)
+
 
                         let predictedVal = document.createElement('p')
                         let predictedValText = document.createTextNode(data['predicted_value'])
@@ -842,6 +879,8 @@
                         image.id = 'life-expec-image'
                         image.className = 'prediction-image'
                         image.src = data['image']
+                        box.appendChild(numUsageTitle)
+                        box.appendChild(numUsageVal)
                         box.appendChild(predictedTitle)
                         box.appendChild(predictedVal)
                         box.appendChild(image)
@@ -852,13 +891,28 @@
                         box.removeChild(existingChart)
                         box.removeChild(existingTitle)
                         box.removeChild(existingVal)
+                        box.removeChild(existingUsageTitle)
+                        box.removeChild(existingUsageVal)
 
                         // Append output to box
+                        let numUsageTitle = document.createElement('p')
+                        let numUsageTitleText = document.createTextNode("Number of Calls: ")
+                        numUsageTitle.id ='life-expec-usage-title'
+                        numUsageTitle.className = 'num-usage-title'
+                        numUsageTitle.appendChild(numUsageTitleText)
+
+                        let numUsageVal = document.createElement('p')
+                        let numUsageValText = document.createTextNode(data['num_calls'])
+                        numUsageVal.id = 'life-expec-usage-val'
+                        numUsageVal.className = 'usage-value'
+                        numUsageVal.appendChild(numUsageValText)
+
                         let predictedTitle = document.createElement('p')
                         let predictedTitleText = document.createTextNode("Predicted Value: ")
                         predictedTitle.id = 'life-expec-title'
                         predictedTitle.className = 'predicted-value-title'
                         predictedTitle.appendChild(predictedTitleText)
+
 
                         let predictedVal = document.createElement('p')
                         let predictedValText = document.createTextNode(data['predicted_value'])
@@ -870,6 +924,8 @@
                         image.id = 'life-expec-image'
                         image.className = 'prediction-image'
                         image.src = data['image']
+                        box.appendChild(numUsageTitle)
+                        box.appendChild(numUsageVal)
                         box.appendChild(predictedTitle)
                         box.appendChild(predictedVal)
                         box.appendChild(image)
@@ -908,8 +964,24 @@
                     let existingChart = document.getElementById('labour-image')
                     let existingTitle = document.getElementById('labour-title')
                     let existingVal = document.getElementById('labour-value')
+                    let existingUsageTitle = document.getElementById('labour-usage-title')
+                    let existingUsageVal = document.getElementById('labour-usage-val')
+
                     if (!existingChart) {
                         // Append output to box
+                        let numUsageTitle = document.createElement('p')
+                        let numUsageTitleText = document.createTextNode("Number of Calls: ")
+                        numUsageTitle.id ='labour-usage-title'
+                        numUsageTitle.className = 'num-usage-title'
+                        numUsageTitle.appendChild(numUsageTitleText)
+
+                        let numUsageVal = document.createElement('p')
+                        let numUsageValText = document.createTextNode(data['num_calls'])
+                        numUsageVal.id = 'labour-usage-val'
+                        numUsageVal.className = 'usage-value'
+                        numUsageVal.appendChild(numUsageValText)
+
+
                         let predictedTitle = document.createElement('p')
                         let predictedTitleText = document.createTextNode("Predicted Value: ")
                         predictedTitle.id = 'labour-title'
@@ -924,6 +996,8 @@
                         image.id = 'labour-image'
                         image.className = 'prediction-image'
                         image.src = data['image']
+                        box.appendChild(numUsageTitle)
+                        box.appendChild(numUsageVal)
                         box.appendChild(predictedTitle)
                         box.appendChild(predictedVal)
                         box.appendChild(image)
@@ -933,7 +1007,21 @@
                         box.removeChild(existingChart)
                         box.removeChild(existingTitle)
                         box.removeChild(existingVal)
+                        box.removeChild(existingUsageTitle)
+                        box.removeChild(existingUsageVal)
                         // Append output to box
+                        let numUsageTitle = document.createElement('p')
+                        let numUsageTitleText = document.createTextNode("Number of Calls: ")
+                        numUsageTitle.id ='labour-usage-title'
+                        numUsageTitle.className = 'num-usage-title'
+                        numUsageTitle.appendChild(numUsageTitleText)
+
+                        let numUsageVal = document.createElement('p')
+                        let numUsageValText = document.createTextNode(data['num_calls'])
+                        numUsageVal.id = 'labour-usage-val'
+                        numUsageVal.className = 'usage-value'
+                        numUsageVal.appendChild(numUsageValText)
+
                         let predictedTitle = document.createElement('p')
                         let predictedTitleText = document.createTextNode("Predicted Value: ")
                         predictedTitle.id = 'labour-title'
@@ -948,6 +1036,8 @@
                         image.id = 'labour-image'
                         image.className = 'prediction-image'
                         image.src = data['image']
+                        box.appendChild(numUsageTitle)
+                        box.appendChild(numUsageVal)
                         box.appendChild(predictedTitle)
                         box.appendChild(predictedVal)
                         box.appendChild(image)
@@ -993,9 +1083,23 @@
                     let existingChart = document.getElementById('co2-emission-image')
                     let existingTitle = document.getElementById('co2-emission-title')
                     let existingVal = document.getElementById('co2-emission-value')
+                    let existingUsageTitle = document.getElementById('co2-emission-usage-title')
+                    let existingUsageVal = document.getElementById('co2-emission-usage-val')
 
                     if (!existingChart) {
                         // Append output to box
+                        let numUsageTitle = document.createElement('p')
+                        let numUsageTitleText = document.createTextNode("Number of Calls: ")
+                        numUsageTitle.id ='co2-emission-usage-title'
+                        numUsageTitle.className = 'num-usage-title'
+                        numUsageTitle.appendChild(numUsageTitleText)
+
+                        let numUsageVal = document.createElement('p')
+                        let numUsageValText = document.createTextNode(data['num_calls'])
+                        numUsageVal.id = 'co2-emission-usage-val'
+                        numUsageVal.className = 'usage-value'
+                        numUsageVal.appendChild(numUsageValText)
+
                         let predictedTitle = document.createElement('p')
                         let predictedTitleText = document.createTextNode("Predicted Value: ")
                         predictedTitle.id = 'co2-emission-title'
@@ -1012,6 +1116,8 @@
                         image.id = 'co2-emission-image'
                         image.className = 'prediction-image'
                         image.src = data['image']
+                        box.appendChild(numUsageTitle)
+                        box.appendChild(numUsageVal)
                         box.appendChild(predictedTitle)
                         box.appendChild(predictedVal)
                         box.appendChild(image)
@@ -1022,8 +1128,22 @@
                         box.removeChild(existingChart)
                         box.removeChild(existingTitle)
                         box.removeChild(existingVal)
+                        box.removeChild(existingUsageTitle)
+                        box.removeChild(existingUsageVal)
 
                         // Append output to box
+                        let numUsageTitle = document.createElement('p')
+                        let numUsageTitleText = document.createTextNode("Number of Calls: ")
+                        numUsageTitle.id ='co2-emission-usage-title'
+                        numUsageTitle.className = 'num-usage-title'
+                        numUsageTitle.appendChild(numUsageTitleText)
+
+                        let numUsageVal = document.createElement('p')
+                        let numUsageValText = document.createTextNode(data['num_calls'])
+                        numUsageVal.id = 'co2-emission-usage-val'
+                        numUsageVal.className = 'usage-value'
+                        numUsageVal.appendChild(numUsageValText)
+
                         let predictedTitle = document.createElement('p')
                         let predictedTitleText = document.createTextNode("Predicted Value: ")
                         predictedTitle.id = 'co2-emission-title'
@@ -1040,6 +1160,8 @@
                         image.id = 'co2-emission-image'
                         image.className = 'prediction-image'
                         image.src = data['image']
+                        box.appendChild(numUsageTitle)
+                        box.appendChild(numUsageVal)
                         box.appendChild(predictedTitle)
                         box.appendChild(predictedVal)
                         box.appendChild(image)
@@ -1084,9 +1206,24 @@
                     let existingChart = document.getElementById('gdp-image')
                     let existingTitle = document.getElementById('gdp-title')
                     let existingVal = document.getElementById('gdp-value')
+                    let existingUsageTitle = document.getElementById('gdp-usage-title')
+                    let existingUsageVal = document.getElementById('gdp-usage-val')
+
 
                     if (!existingChart) {
                         // Append output to box
+                        let numUsageTitle = document.createElement('p')
+                        let numUsageTitleText = document.createTextNode("Number of Calls: ")
+                        numUsageTitle.id ='gdp-usage-title'
+                        numUsageTitle.className = 'num-usage-title'
+                        numUsageTitle.appendChild(numUsageTitleText)
+
+                        let numUsageVal = document.createElement('p')
+                        let numUsageValText = document.createTextNode(data['num_calls'])
+                        numUsageVal.id = 'gdp-usage-val'
+                        numUsageVal.className = 'usage-value'
+                        numUsageVal.appendChild(numUsageValText)
+
                         let predictedTitle = document.createElement('p')
                         let predictedTitleText = document.createTextNode("Predicted Value: ")
                         predictedTitle.id = 'gdp-title'
@@ -1103,6 +1240,8 @@
                         image.id = 'gdp-image'
                         image.className = 'prediction-image'
                         image.src = data['image']
+                        box.appendChild(numUsageTitle)
+                        box.appendChild(numUsageVal)
                         box.appendChild(predictedTitle)
                         box.appendChild(predictedVal)
                         box.appendChild(image)
@@ -1113,8 +1252,22 @@
                         box.removeChild(existingChart)
                         box.removeChild(existingTitle)
                         box.removeChild(existingVal)
+                        box.removeChild(existingUsageTitle)
+                        box.removeChild(existingUsageVal)
 
                         // Append output to box
+                        let numUsageTitle = document.createElement('p')
+                        let numUsageTitleText = document.createTextNode("Number of Calls: ")
+                        numUsageTitle.id ='gdp-usage-title'
+                        numUsageTitle.className = 'num-usage-title'
+                        numUsageTitle.appendChild(numUsageTitleText)
+
+                        let numUsageVal = document.createElement('p')
+                        let numUsageValText = document.createTextNode(data['num_calls'])
+                        numUsageVal.id = 'gdp-usage-val'
+                        numUsageVal.className = 'usage-value'
+                        numUsageVal.appendChild(numUsageValText)
+
                         let predictedTitle = document.createElement('p')
                         let predictedTitleText = document.createTextNode("Predicted Value: ")
                         predictedTitle.id = 'gdp-title'
@@ -1131,6 +1284,8 @@
                         image.id = 'gdp-image'
                         image.className = 'prediction-image'
                         image.src = data['image']
+                        box.appendChild(numUsageTitle)
+                        box.appendChild(numUsageVal)
                         box.appendChild(predictedTitle)
                         box.appendChild(predictedVal)
                         box.appendChild(image)
@@ -1176,9 +1331,23 @@
                     let existingChart = document.getElementById('fertility-rate-image')
                     let existingTitle = document.getElementById('fertility-rate-title')
                     let existingVal = document.getElementById('fertility-rate-value')
+                    let existingUsageTitle = document.getElementById('fertility-rate-usage-title')
+                    let existingUsageVal = document.getElementById('fertility-rate-usage-val')
 
                     if (!existingChart) {
                         // Append output to box
+                        let numUsageTitle = document.createElement('p')
+                        let numUsageTitleText = document.createTextNode("Number of Calls: ")
+                        numUsageTitle.id ='fertility-rate-usage-title'
+                        numUsageTitle.className = 'num-usage-title'
+                        numUsageTitle.appendChild(numUsageTitleText)
+
+                        let numUsageVal = document.createElement('p')
+                        let numUsageValText = document.createTextNode(data['num_calls'])
+                        numUsageVal.id = 'fertility-rate-usage-val'
+                        numUsageVal.className = 'usage-value'
+                        numUsageVal.appendChild(numUsageValText)
+
                         let predictedTitle = document.createElement('p')
                         let predictedTitleText = document.createTextNode("Predicted Value: ")
                         predictedTitle.id = 'fertility-rate-title'
@@ -1195,6 +1364,8 @@
                         image.id = 'fertility-rate-image'
                         image.className = 'prediction-image'
                         image.src = data['image']
+                        box.appendChild(numUsageTitle)
+                        box.appendChild(numUsageVal)
                         box.appendChild(predictedTitle)
                         box.appendChild(predictedVal)
                         box.appendChild(image)
@@ -1205,8 +1376,22 @@
                         box.removeChild(existingChart)
                         box.removeChild(existingTitle)
                         box.removeChild(existingVal)
+                        box.removeChild(existingUsageTitle)
+                        box.removeChild(existingUsageVal)
 
                         // Append output to box
+                        let numUsageTitle = document.createElement('p')
+                        let numUsageTitleText = document.createTextNode("Number of Calls: ")
+                        numUsageTitle.id ='fertility-rate-usage-title'
+                        numUsageTitle.className = 'num-usage-title'
+                        numUsageTitle.appendChild(numUsageTitleText)
+
+                        let numUsageVal = document.createElement('p')
+                        let numUsageValText = document.createTextNode(data['num_calls'])
+                        numUsageVal.id = 'fertility-rate-usage-val'
+                        numUsageVal.className = 'usage-value'
+                        numUsageVal.appendChild(numUsageValText)
+
                         let predictedTitle = document.createElement('p')
                         let predictedTitleText = document.createTextNode("Predicted Value: ")
                         predictedTitle.id = 'fertility-rate-title'
@@ -1223,6 +1408,8 @@
                         image.id = 'fertility-rate-image'
                         image.className = 'prediction-image'
                         image.src = data['image']
+                        box.appendChild(numUsageTitle)
+                        box.appendChild(numUsageVal)
                         box.appendChild(predictedTitle)
                         box.appendChild(predictedVal)
                         box.appendChild(image)
