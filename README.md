@@ -9,6 +9,6 @@ Install the following:
 ## Usage
 To use the application, both the frontend and backend server files need to be run:
 
-    * The Backend server file is the `routes.py` file under the root of the repository.
+ * The Backend server file is the `routes.py` file under the root of the repository.
 
-    * The Frontend server file can be found in `Frontend/routes.py`
+ * The Frontend server file can be found in `Frontend/routes.py`
