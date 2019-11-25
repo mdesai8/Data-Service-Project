@@ -17,14 +17,24 @@ def create_file():
 
 def getNumUsages(endpoint):
 
-    usages = shelve.open(USAGE_FILE_PATH, flag='c')
+    try:
+        usages = shelve.open(USAGE_FILE_PATH, flag='r')
+    except:
+        create_file()
+        usages = shelve.open(USAGE_FILE_PATH, flag='r')
+
     if endpoint in usages:
         return usages[endpoint]
 
     return 0
 
 def incrementUsage(endpoint):
-    usages = shelve.open(USAGE_FILE_PATH)
+    try:
+        usages = shelve.open(USAGE_FILE_PATH, flag='w')
+    except:
+        create_file()
+        usages = shelve.open(USAGE_FILE_PATH, flag='w')
+
     currUsages = usages[endpoint]
     usages[endpoint] = currUsages + 1
 

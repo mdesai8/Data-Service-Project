@@ -10,6 +10,7 @@ from predictCO2 import *
 from gdp_predict import *
 from predictFertility import *
 from labour_predict import *
+from track_usage import *
 import json
 import base64
 
@@ -88,6 +89,9 @@ class Life_Expectancy(Resource):
             encoded_image = str(base64.b64encode(imageFile.read()))[2:]
             encoded_image = encoded_image[:-1]
 
+            
+
+
             return {"predicted_value": p_le, "image": "data:image/png;base64,"+encoded_image}, 200
 
 
@@ -147,7 +151,7 @@ class Labour(Resource):
             encoded_image = encoded_image[:-1]
 
             return {"predicted_value": labourPred, "image": "data:image/png;base64,"+encoded_image}, 200
-        
+
 @api.route("/co2_emission")
 #@cross_origin()
 class CO2_Emission(Resource):
