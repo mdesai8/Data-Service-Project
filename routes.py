@@ -160,7 +160,7 @@ class Labour(Resource):
             incrementUsage('labour')
             numCalls = getNumUsages('labour')
 
-            return {"predicted_value": predicted_gdp,
+            return {"predicted_value": labourPred,
                     "num_calls" : numCalls,
                     "image": "data:image/png;base64,"+encoded_image}, 200
 
@@ -193,7 +193,7 @@ class CO2_Emission(Resource):
             incrementUsage('co2')
             numCalls = getNumUsages('co2')
 
-            return {"predicted_value": predicted_gdp,
+            return {"predicted_value": predictedEmission,
                     "num_calls" : numCalls,
                     "image": "data:image/png;base64,"+encoded_image}, 200
 
@@ -226,7 +226,7 @@ class Fertility_Rate(Resource):
             incrementUsage('fertility_rate')
             numCalls = getNumUsages('fertility_rate')
 
-            return {"predicted_value": predicted_gdp,
+            return {"predicted_value": predictedFertility,
                     "num_calls" : numCalls,
                     "image": "data:image/png;base64,"+encoded_image}, 200
 
