@@ -202,4 +202,5 @@ def generate_animation(file1, file2):
     writer = ImageMagickFileWriter()
     ani.save('predicted_images/analysis.gif', writer=writer)
     #animate_data('CO2.csv','gdp.csv')
-    plt.show()
+    # plt.show()
+    plt.close()
