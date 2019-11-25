@@ -43,7 +43,7 @@ CORS(app)
 api = Api(app,
         default="Country Feature Predictions",
         title="Country Feature Predictions",
-        description="This API provides a way to get various predictions for certain features about a country by year")
+        description="This API provides a way to get various predictions for certain features about a country by year. You can also obtain the correlation of 2 features and see how it changes over time for different regions.")
 
 input_model = api.model('Country_and_Year', {
     'country_name': fields.String,
