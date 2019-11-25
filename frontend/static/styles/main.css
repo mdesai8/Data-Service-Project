@@ -105,6 +105,18 @@ body {
     text-align: center;
 }
 
+.num-usage-title {
+    font-weight: 600;
+    font-size: 14pt;
+    text-align: center;
+}
+
+.usage-value {
+    font-size: 14pt;
+    color: green;
+    text-align: center;
+}
+
 .select-country {
     height: 30px;
     width: 200px;

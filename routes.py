@@ -89,10 +89,12 @@ class Life_Expectancy(Resource):
             encoded_image = str(base64.b64encode(imageFile.read()))[2:]
             encoded_image = encoded_image[:-1]
 
-            
+            incrementUsage('life_expectancy')
+            numCalls = getNumUsages('life_expectancy')
 
-
-            return {"predicted_value": p_le, "image": "data:image/png;base64,"+encoded_image}, 200
+            return {"predicted_value": p_le,
+                    "num_calls" : numCalls,
+                    "image": "data:image/png;base64,"+encoded_image}, 200
 
 
 @api.route("/gdp_endpoint")
@@ -122,7 +124,12 @@ class Predict_gdp(Resource):
             encoded_image = str(base64.b64encode(imageFile.read()))[2:]
             encoded_image = encoded_image[:-1]
 
-            return {"predicted_value": predicted_gdp, "image": "data:image/png;base64,"+encoded_image}, 200
+            incrementUsage('gdp')
+            numCalls = getNumUsages('gdp')
+
+            return {"predicted_value": predicted_gdp,
+                    "num_calls" : numCalls,
+                    "image": "data:image/png;base64,"+encoded_image}, 200
 
 @api.route("/labour")
 class Labour(Resource):
@@ -150,7 +157,12 @@ class Labour(Resource):
             encoded_image = str(base64.b64encode(imageFile.read()))[2:]
             encoded_image = encoded_image[:-1]
 
-            return {"predicted_value": labourPred, "image": "data:image/png;base64,"+encoded_image}, 200
+            incrementUsage('labour')
+            numCalls = getNumUsages('labour')
+
+            return {"predicted_value": predicted_gdp,
+                    "num_calls" : numCalls,
+                    "image": "data:image/png;base64,"+encoded_image}, 200
 
 @api.route("/co2_emission")
 #@cross_origin()
@@ -178,7 +190,11 @@ class CO2_Emission(Resource):
             encoded_image = str(base64.b64encode(imageFile.read()))[2:]
             encoded_image = encoded_image[:-1]
 
-            return {"predicted_value" : predictedEmission,
+            incrementUsage('co2')
+            numCalls = getNumUsages('co2')
+
+            return {"predicted_value": predicted_gdp,
+                    "num_calls" : numCalls,
                     "image": "data:image/png;base64,"+encoded_image}, 200
 
 @api.route("/fertility_rate")
@@ -207,7 +223,11 @@ class Fertility_Rate(Resource):
             encoded_image = str(base64.b64encode(imageFile.read()))[2:]
             encoded_image = encoded_image[:-1]
 
-            return {"predicted_value" : predictedFertility,
+            incrementUsage('fertility_rate')
+            numCalls = getNumUsages('fertility_rate')
+
+            return {"predicted_value": predicted_gdp,
+                    "num_calls" : numCalls,
                     "image": "data:image/png;base64,"+encoded_image}, 200
 
 
