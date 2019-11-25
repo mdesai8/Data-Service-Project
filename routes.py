@@ -45,6 +45,11 @@ api = Api(app,
         title="Country Feature Predictions",
         description="This API provides a way to get various predictions for certain features about a country by year. You can also obtain the correlation of 2 features and see how it changes over time for different regions.")
 
+login_model = api.model('Login', {
+    'username': fields.String,
+    'password': fields.String
+})
+
 input_model = api.model('Country_and_Year', {
     'country_name': fields.String,
     'year': fields.Integer
@@ -60,6 +65,7 @@ class Auth(Resource):
     @api.response(200, 'Authenticated')
     @api.response(400, 'Invalid Credentials')
     @api.doc(description="Authenticate User")
+    @api.expect(login_model, validate=True)
     def post(self):
         body = request.json
 
@@ -81,6 +87,9 @@ class Life_Expectancy(Resource):
                         Returns the predicted value and a graph showing the progression of life expectancy over the years""")
     @api.expect(input_model, validate=True)
     def post(self):
+        if not auth.check_auth():
+            return {"message": "Unauthorised Access"}, 401
+        
         body = request.json
 
         if 'year' not in body or 'country_name' not in body:
@@ -114,6 +123,9 @@ class Predict_gdp(Resource):
                         Returns the predicted value and a graph showing the progression of GDP over the years""")
     @api.expect(input_model, validate=True)
     def post(self):
+        if not auth.check_auth():
+            return {"message": "Unauthorised Access"}, 401
+
         body = request.json
 
         if 'year' not in body or 'country_name' not in body:
@@ -149,6 +161,9 @@ class Labour(Resource):
                         Returns the predicted value and a graph showing the progression of labour force over the years""")
     @api.expect(input_model, validate=True)
     def post(self):
+        if not auth.check_auth():
+            return {"message": "Unauthorised Access"}, 401
+
         body = request.json
 
         if 'year' not in body or 'country_name' not in body:
@@ -184,6 +199,9 @@ class CO2_Emission(Resource):
                         Returns the predicted value and a graph showing the progression of CO2 Emissions over the years""")
     @api.expect(input_model, validate=True)
     def post(self):
+        if not auth.check_auth():
+            return {"message": "Unauthorised Access"}, 401
+
         body = request.json
 
 
@@ -218,6 +236,9 @@ class Fertility_Rate(Resource):
                         Returns the predicted value and a graph showing the progression of Fertility rate over the years""")
     @api.expect(input_model, validate=True)
     def post(self):
+        if not auth.check_auth():
+            return {"message": "Unauthorised Access"}, 401
+
         body = request.json
 
 
@@ -251,6 +272,9 @@ class Analysis(Resource):
     @api.doc(description="Obtain a graph showing the correlation between two features (based on region)")
     @api.expect(analysis_model, validate=True)
     def post(self):
+        if not auth.check_auth():
+            return {"message": "Unauthorised Access"}, 401
+
         body = request.json
         x_feature = body['x']
         y_feature = body['y']
