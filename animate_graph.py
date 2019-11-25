@@ -7,8 +7,10 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+from matplotlib.animation import ImageMagickFileWriter
 from IPython.display import Image, display
 #get_ipython().magic('matplotlib notebook')
+animation.convert_path: 'magick.exe'
 
 
 # In[128]:
@@ -115,86 +117,89 @@ def animate_data(file_x,file_y):
 	
 
 # In[ ]:
-df,file_x,file_y=animate_data(file1,file2)
+def generate_animation(file1, file2):
+    df,file_x,file_y=animate_data(file1,file2)
 
-years = df['Year'].unique().tolist()
+    years = df['Year'].unique().tolist()
 
-fig, ax = plt.subplots(figsize=(8, 8))
-ax.set_xlim(df[file_x].min() - .3,
-            df[file_x].max() + .3)
-ax.set_ylim(df[file_y].min() - 2,
-            df[file_y].max() + 2)
+    fig, ax = plt.subplots(figsize=(8, 8))
+    ax.set_xlim(df[file_x].min() - .3,
+                df[file_x].max() + .3)
+    ax.set_ylim(df[file_y].min() - 2,
+                df[file_y].max() + 2)
 
-# set the regions' colors
-colors = {
-    'Latin America & Caribbean': '#2CA02C',
-    'South Asia': '#8C564B',
-    'Sub-Saharan Africa': '#E377C2',
-    'Europe & Central Asia': '#FF7F0E',
-    'Middle East & North Africa': '#D62728',
-    'East Asia & Pacific': '#1F77B4',
-    'North America': '#9467BD'
-}
+    # set the regions' colors
+    colors = {
+        'Latin America & Caribbean': '#2CA02C',
+        'South Asia': '#8C564B',
+        'Sub-Saharan Africa': '#E377C2',
+        'Europe & Central Asia': '#FF7F0E',
+        'Middle East & North Africa': '#D62728',
+        'East Asia & Pacific': '#1F77B4',
+        'North America': '#9467BD'
+    }
 
-# create one scatterplot per region
-# I need to do like this to have all the regions 
-# showing up in the legend
-scats = []
-groups = df.groupby('Region')
-for name, grp in groups:
-    scat = ax.scatter([], [],
-                    marker='o',
-                    color=colors[name],
-                    label=name,
-                    edgecolor='silver',
-                    alpha=.6)
-    scats.append(scat)
+    # create one scatterplot per region
+    # I need to do like this to have all the regions 
+    # showing up in the legend
+    scats = []
+    groups = df.groupby('Region')
+    for name, grp in groups:
+        scat = ax.scatter([], [],
+                        marker='o',
+                        color=colors[name],
+                        label=name,
+                        edgecolor='silver',
+                        alpha=.6)
+        scats.append(scat)
 
-# add the year in the middle of the scatter plot
-# for now, the text is empty (''). Il will be filled 
-# in each frame
-year_label = ax.text(4.5, 50, '', va='baseline', ha='right', alpha=.3,
-                    size=12, fontdict={'weight': 'bold'})
+    # add the year in the middle of the scatter plot
+    # for now, the text is empty (''). Il will be filled 
+    # in each frame
+    year_label = ax.text(4.5, 50, '', va='baseline', ha='right', alpha=.3,
+                        size=12, fontdict={'weight': 'bold'})
 
-# decorate the visualization
-ax.spines['bottom'].set_color('silver')
-ax.spines['top'].set_color('silver')
-ax.spines['right'].set_color('silver')
-ax.spines['left'].set_color('silver')
-ax.tick_params(
-    labelcolor='silver',
-    color='silver'
-)
-ax.set_xlabel(file_x, color='silver')
-ax.set_ylabel(file_y, color='silver')
-ax.legend(loc=1, fontsize=7)
+    # decorate the visualization
+    ax.spines['bottom'].set_color('silver')
+    ax.spines['top'].set_color('silver')
+    ax.spines['right'].set_color('silver')
+    ax.spines['left'].set_color('silver')
+    ax.tick_params(
+        labelcolor='silver',
+        color='silver'
+    )
+    ax.set_xlabel(file_x, color='silver')
+    ax.set_ylabel(file_y, color='silver')
+    ax.legend(loc=1, fontsize=7)
 
-# set the initial state
-def init():
-    for scat in scats:
-        scat.set_offsets([])
-    return scats,
+    # set the initial state
+    def init():
+        for scat in scats:
+            scat.set_offsets([])
+        return scats,
 
-# function that will update the figure with new data
-def update(year):
-    # I need to update all scatterplots one by one
-    # and return a list of updated plots
-    for scat, (name, data) in zip(scats, groups):
-        # get the data for the current year
-        sample = data[data['Year'] == year]
-        # set the x and y values 
-        scat.set_offsets(sample[[file_x, file_y]])
-        # update the size of the markers with the population
-        # of the current year
-        scat.set_sizes(np.sqrt(sample['Population'] / 10000) * 5)
-        year_label.set_text(year)
-    return scats,
+    # function that will update the figure with new data
+    def update(year):
+        # I need to update all scatterplots one by one
+        # and return a list of updated plots
+        for scat, (name, data) in zip(scats, groups):
+            # get the data for the current year
+            sample = data[data['Year'] == year]
+            # set the x and y values 
+            scat.set_offsets(sample[[file_x, file_y]])
+            # update the size of the markers with the population
+            # of the current year
+            scat.set_sizes(np.sqrt(sample['Population'] / 10000) * 5)
+            year_label.set_text(year)
+        return scats,
 
-# generate the animation
-ani = animation.FuncAnimation(fig, update, init_func=init,
-                            frames=years,
-                            interval=100,
-                            repeat=False)
+    # generate the animation
+    ani = animation.FuncAnimation(fig, update, init_func=init,
+                                frames=years,
+                                interval=50,
+                                repeat=False)
 
-#animate_data('CO2.csv','gdp.csv')
-plt.show()
+    writer = ImageMagickFileWriter()
+    ani.save('predicted_images/analysis.gif', writer=writer)
+    #animate_data('CO2.csv','gdp.csv')
+    plt.show()

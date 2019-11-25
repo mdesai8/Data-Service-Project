@@ -62,6 +62,30 @@
                     <p class="endpoint-desc"> Obtain the predicted Fertility Rate of a country for a particular year. </p>
                 </div>
             </div>
+            <div id="analysis-window" class="endpoint-windows">
+                <p onclick="toggleAnalysisWindow()" id="analysis-title-text" class="title-texts"> Country Analysis
+                    <i id="analysis-arrow" class="down-arrow"> </i>
+                </p>
+                <div id="analysis-box" class="endpoint-box">
+                    <p class="endpoint-url"> Endpoint: <a> /country_analysis </a> </p>
+                    <p class="endpoint-desc"> Obtain a graph showing the correlation between two features (based on region) </p>
+                    <select class="select-x" id="analysis-select-x">
+                        <option value="CO2.csv"> CO2 Emissions </option>
+                        <option value="fertility_rate.csv"> Fertility Rate </option>
+                        <option value="gdp.csv"> GDP </option>
+                        <option value="labour.csv"> Labour </option>
+                        <option value="life_expectancy.csv"> Life Expectancy </option>
+                    </select>
+                    <select class="select-y" id="analysis-select-y">
+                        <option value="CO2.csv"> CO2 Emissions </option>
+                        <option value="fertility_rate.csv"> Fertility Rate </option>
+                        <option value="gdp.csv"> GDP </option>
+                        <option value="labour.csv"> Labour </option>
+                        <option value="life_expectancy.csv"> Life Expectancy </option>
+                    </select>
+                    <button class="button" id="analysis-button" onclick="getAnalysisData()"> Get Data </button>
+                </div>
+            </div>
         </div>
         <!-- <div id="display"></div> -->
     </body>
@@ -72,6 +96,7 @@
         let co2Visible = false
         let lifeExpectancyVisible = false
         let fertilityVisible = false
+        let analysisVisible = false
 
         async function login() {
             let username = document.getElementById('username').value
@@ -751,6 +776,22 @@
             }
         }
 
+        function toggleAnalysisWindow() {
+            let box = document.getElementById('analysis-box')
+            let arrow = document.getElementById('analysis-arrow')
+
+            if (!analysisVisible) {
+                arrow.className = "up-arrow"
+                box.style.display = "block"
+                analysisVisible = true
+            }
+            else {
+                box.style.display = "none"
+                arrow.className = "down-arrow"
+                analysisVisible = false
+            }
+        }
+
         async function getLifeExpectancyPred() {
             let box = document.getElementById('life-expectancy-box')
             let selectCountry = document.getElementById('life-expec-select-country')
@@ -1039,7 +1080,6 @@
                 }
 
                 else if (response.status == 200) {
-                    console.log(data)
 
                     let existingChart = document.getElementById('gdp-image')
                     let existingTitle = document.getElementById('gdp-title')
@@ -1191,6 +1231,62 @@
             }
             catch (error) {
                 alert(error)
+            }
+        }
+
+        async function getAnalysisData() {
+            let box = document.getElementById('analysis-box')
+            let selectX = document.getElementById('analysis-select-x')
+            let selectY = document.getElementById('analysis-select-y')
+
+            let loadingSymbol = document.createElement('p')
+            loadingSymbol.innerText = "Loading..."
+            box.appendChild(loadingSymbol)
+
+            let xFeature = selectX.value
+            let yFeature = selectY.value
+
+            let body = {
+                x: xFeature,
+                y: yFeature
+            }
+
+            try {
+                let response = await fetch("http://127.0.0.1:5000/country_analysis", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json'},
+                    body: JSON.stringify(body)
+                })
+
+                let data = await response.json()
+
+                if (response.status == 404) {
+                    box.removeChild(loadingSymbol)
+                    alert("Feature does not exist within our datasets")
+                }
+
+                else if (response.status == 200) {
+                    box.removeChild(loadingSymbol)
+                    let existingChart = document.getElementById('analysis-image')
+
+                    if (!existingChart) {
+                        let image = document.createElement('img')
+                        image.id = 'analysis-image'
+                        image.className = 'analysis-image'
+                        image.src = data['image']
+                        box.appendChild(image)
+                    }
+                    else {
+                        box.removeChild(existingChart)
+                        let image = document.createElement('img')
+                        image.id = 'analysis-image'
+                        image.className = 'prediction-image'
+                        image.src = data['image']
+                        box.appendChild(image)
+                    }
+                }
+            } catch (error) {
+                alert (error)
             }
         }
         // async function getNumber() {

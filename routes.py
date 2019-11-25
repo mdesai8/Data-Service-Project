@@ -10,6 +10,7 @@ from predictCO2 import *
 from gdp_predict import *
 from predictFertility import *
 from labour_predict import *
+from animate_graph import *
 import json
 import base64
 
@@ -38,13 +39,18 @@ class Usage():
 app = Flask(__name__)
 CORS(app)
 api = Api(app,
-        default="Country Stats",
-        title="Country Statistics",
-        description="This API provides a way to get various predictions about a country by year")
+        default="Country Feature Predictions",
+        title="Country Feature Predictions",
+        description="This API provides a way to get various predictions for certain features about a country by year")
 
 input_model = api.model('Country_and_Year', {
     'country_name': fields.String,
     'year': fields.Integer
+})
+
+analysis_model = api.model('Features', {
+    'x': fields.String,
+    'y': fields.String
 })
 
 @api.route("/authentication")
@@ -69,7 +75,8 @@ class Life_Expectancy(Resource):
     @api.response(200, "Successful")
     @api.response(404, "Country name does not exist")
     @api.response(400, "Malformed Request")
-    @api.doc(description="Obtain the predicted life expectancy of a country for a particular year")
+    @api.doc(description="""Obtain the predicted life expectancy of a country for a particular year.
+                        Returns the predicted value and a graph showing the progression of life expectancy over the years""")
     @api.expect(input_model, validate=True)
     def post(self):
         body = request.json
@@ -96,7 +103,8 @@ class Predict_gdp(Resource):
     @api.response(200, "Successful")
     @api.response(404, "Country name does not exist")
     @api.response(400, "Malformed Request")
-    @api.doc(description="Obtain the predicted GDP of a country for a particular year")
+    @api.doc(description="""Obtain the predicted GDP of a country for a particular year.    
+                        Returns the predicted value and a graph showing the progression of GDP over the years""")
     @api.expect(input_model, validate=True)
     def post(self):
         body = request.json
@@ -125,7 +133,8 @@ class Labour(Resource):
     @api.response(200, "Successful")
     @api.response(404, "Country name does not exist")
     @api.response(400, "Malformed Request")
-    @api.doc(description="Obtain the predicted labour force of a country for a particular year")
+    @api.doc(description="""Obtain the predicted labour force of a country for a particular year.
+                        Returns the predicted value and a graph showing the progression of labour force over the years""")
     @api.expect(input_model, validate=True)
     def post(self):
         body = request.json
@@ -154,7 +163,8 @@ class CO2_Emission(Resource):
     @api.response(200, "Successful")
     @api.response(404, "Country name does not exist")
     @api.response(400, "Malformed Request")
-    @api.doc(description="Obtain the predicted CO2 Emission of a country for a particular year")
+    @api.doc(description="""Obtain the predicted CO2 Emission of a country for a particular year.
+                        Returns the predicted value and a graph showing the progression of CO2 Emissions over the years""")
     @api.expect(input_model, validate=True)
     def post(self):
         body = request.json
@@ -183,7 +193,8 @@ class Fertility_Rate(Resource):
     @api.response(200, "Successful")
     @api.response(404, "Country name does not exist")
     @api.response(400, "Malformed Request")
-    @api.doc(description="Obtain the predicted Fertility rate of a country for a particular year")
+    @api.doc(description="""Obtain the predicted Fertility rate of a country for a particular year.
+                        Returns the predicted value and a graph showing the progression of Fertility rate over the years""")
     @api.expect(input_model, validate=True)
     def post(self):
         body = request.json
@@ -206,6 +217,31 @@ class Fertility_Rate(Resource):
             return {"predicted_value" : predictedFertility,
                     "image": "data:image/png;base64,"+encoded_image}, 200
 
+
+@api.route("/country_analysis")
+class Analysis(Resource):
+    @api.response(200, "Successful")
+    @api.response(404, "Feature does not exist")
+    @api.response(400, "Malformed Request")
+    @api.doc(description="Obtain a graph showing the correlation between two features (based on region)")
+    @api.expect(analysis_model, validate=True)
+    def post(self):
+        body = request.json
+        x_feature = body['x']
+        y_feature = body['y']
+
+        valid_features = ['C02.csv', 'fertility_rate.csv', 'gdp.csv', 'labour.csv', 'life_expectancy.csv']
+        
+        if x_feature not in valid_features or y_feature not in valid_features:
+            return {"message": "Feature does not exist"}, 400
+
+        generate_animation(x_feature, y_feature)
+
+        with open("predicted_images/analysis.gif", "rb") as imageFile:
+            encoded_image = str(base64.b64encode(imageFile.read()))[2:]
+            encoded_image = encoded_image[:-1]
+
+            return {"image": "data:image/png;base64,"+encoded_image}, 200
 
 
 if __name__ == "__main__":

@@ -2,6 +2,7 @@ body {
     background-color: #f2f2f2;
     text-align: center;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin-bottom: 60px;
 }
 
 .main-title {
@@ -93,6 +94,13 @@ body {
     margin-bottom: 10px;
 }
 
+.analysis-image {
+    width: 80%;
+    height: 450px;
+    margin-left: 10%;
+    margin-bottom: 10px;
+}
+
 .predicted-value-title {
     font-weight: 600;
     font-size: 14pt;
@@ -105,14 +113,14 @@ body {
     text-align: center;
 }
 
-.select-country {
+.select-country, .select-x {
     height: 30px;
     width: 200px;
     margin-left: 250px;
     margin-bottom: 10px;
 }
 
-.select-year {
+.select-year, .select-y {
     /* display: inline-block; */
     height: 30px;
     width: 200px;
